@@ -4,11 +4,8 @@
  * поскольку я не знаю, что программисты называют
  * КВАДРАТНЫМ уравнением. Да и че бы и нет.
  */
-
-/* QUESTION - не слишком ли много комментариев?
-И как их писать правильно вообще? */
-
-//-----------------------------------v-includ'ы и объявления-v-------------------------------------
+// QUESTION - МБ можно документровть и не функции?
+//-------------------------------------------v-общее-v---------------------------------------------
 #include "TXLib.h"
 
 #include <assert.h>
@@ -16,24 +13,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-enum root_number
-{
-    ZERO,
-    ONE,
-    TWO,
-    INFTY,
-}; // enum количества найденных корней
+const int INFTY = -1; // значение для бесконечности корней
+const double EPS = 1e-6; //  точность
+
+int cmp_double(double a, double b); // равны ли два числа
 
 typedef struct
 {
-    enum root_number rnum;
-    double x1;
-    double x2;
-    /* x1 и x2 - корни. столько достаточно, так корней либо
-    бесконечность либо <= 2. Предполагается, что
-    если корень один, то он хранится в x1, если корней два,
-    то в x1 меньший. */
+    int rnum;
+    double x1; // x1 и x2 - корни. Два корня - x1 < x2.
+    double x2; //Один корень - он в x1.
 } sSolution; // в такую структуру запишется решение
+
 typedef struct
 {
     double a;
@@ -41,27 +32,31 @@ typedef struct
     double c;
 } sParams; // в такую структуру запишутся параметры уравнения
 
-#define EPS 1e-6
-#define eq(a, b) (fabs((a) - (b)) < EPS)
-//-----------------------------------^-includ'ы и объявления-^-------------------------------------
+//-------------------------------------------^-общее-^---------------------------------------------
 
+//-----------------------------------v-main и вызываемое ею-v--------------------------------------
 int input(int argc, char *argv[], sParams* params); // Считывает параметры уравнения
-sSolution deg2(sParams params);        // Решает уравнение ax^2 + bx +c = 0
+
+// TODO - ЗДЕСЬ ДОКИ
+int solve_general(sParams params, sSolution* solution);
 void fix_zero(sSolution *solution);   // Поправляет -0
+
 void output(sSolution solution);       // Выводит решение
 
 int main(int argc, char *argv[])
 {
-
     sParams params = {.0, .0, .0};
     if (!input(argc, argv, &params))
         return -1;
-    sSolution solution = deg2(params);
+
+    sSolution solution = {0, .0, .0};
+    solve_general(params, &solution);
     fix_zero(&solution);
     output(solution);
 
     return 0;
 }
+//-----------------------------------^-main и вызываемое ею-^--------------------------------------
 
 //---------------------------------------v-ввод и вывод-v------------------------------------------
 int input_cl(int argc, char *argv[], sParams* params); // Считывает аргументы командной строки.
@@ -85,10 +80,10 @@ int input(int argc, char *argv[], sParams* params)
     printf("Введите коэффициэнты - три числа:\n");
     if (scanf("%lf %lf %lf", &params->a, &params->b, &params->c) < 3)
     {
-        printf("Аргументы консоли введены неверно");
+        printf("Аргументы введены неверно");
         return 0;
     }
-    return 1;
+    return 1; //TODO - константы ошибок, 0 - это ок
 }
 
 int input_cl(int argc, char *argv[], sParams* params)
@@ -106,19 +101,19 @@ int input_cl(int argc, char *argv[], sParams* params)
     if (argc < 4)
     {
         printf("Недостаточно аргументов командной строки");
-        return 0;
+        return 1;
     }
 
     char * p = NULL;
 
     params->a = strtod(argv[1],&p);
-    if (*p != '\0')
+    if (*p != '\0' || p==argv[1])
         goto NaN_error;
     params->b = strtod(argv[2],&p);
-    if (*p != '\0')
+    if (*p != '\0' || p==argv[2])
         goto NaN_error;
     params->c = strtod(argv[3],&p);
-    if (*p != '\0')
+    if (*p != '\0' || p==argv[3])
         goto NaN_error;
 
     return 1;
@@ -128,7 +123,7 @@ int input_cl(int argc, char *argv[], sParams* params)
         return 0;
 }
 
-void fix_zero(sSolution *solution) // FIXME - мб можно добиться этого проще?
+void fix_zero(sSolution *solution)
 /*sParams* params
  * Поправляет -0.
  *
@@ -140,9 +135,9 @@ void fix_zero(sSolution *solution) // FIXME - мб можно добиться этого проще?
  * заменяет -0.0 на 0.0 .
  */
 {
-    if (eq(solution->x1, .0))
+    if (!cmp_double(solution->x1, .0))
         solution->x1 = .0;
-    if (eq(solution->x2, .0))
+    if (!cmp_double(solution->x2, .0))
         solution->x2 = .0;
 }
 
@@ -161,88 +156,111 @@ void output(sSolution solution)
 
     switch (solution.rnum)
     {
-    case ZERO:
+    case 0:
         printf("нет корней.\n");
         break;
-    case ONE:
+    case 1:
         printf("1 корень: %f.\n", solution.x1);
         break;
-    case TWO:
+    case 2:
         printf("2 корня: %f, %f.\n", solution.x1, solution.x2);
         break;
     case INFTY:
-        printf("бесконечно много корней.");
+        printf("бесконечно много корней.\n");
         break;
     default:
-        printf("\n погромист где-то ошибся.");
+        fprintf(stderr,"\nERROR: main(): solution.rnum == %d\n", solution.rnum);
         break;
     }
 }
 //---------------------------------------^-ввод и вывод-^------------------------------------------
 
 //-------------------------------------v-решение уравнения-v---------------------------------------
-sSolution deg1(sParams params); // Решает уравнение ax + b = 0
+int solve_deg2(sParams params, sSolution* solution); // Решает уравнение ax^2 + bx +c = 0
+int solve_deg1(sParams params, sSolution* solution); // Решает уравнение ax + b = 0
+int solve_deg0(sParams params, sSolution* solution); // Решает уравнение c = 0
 
-sSolution deg2(sParams params)
+int solve_general(sParams params, sSolution* solution)
+{
+    if (cmp_double(params.a, 0))
+        return solve_deg2(params, solution);
+    if (cmp_double(params.b, 0))
+        return solve_deg1(params, solution);
+    return solve_deg0(params, solution);
+}
+
+int solve_deg2(sParams params, sSolution* solution)
 /*
  * Решает уравнение ax^2 + bx + c = 0.
  *
- * Причем уравнение не обязательно квадратное,
- * т. е. возможно a = 0.
+ * Если a = 0, то падает на assert'е
  *
- * Принимает параметры в виде sParams, возвращает
- * решение в виде sSolution.
+ * Принимает параметры в виде sParams и указатель
+ * для записи решения, возвращает 0.
  */
 {
-    if (eq(params.a, .0))
-        return deg1(params);
+    assert(cmp_double(params.a, .0));
 
     double a = params.a;
     double b = params.b;
     double c = params.c;
     double D = b * b - 4 * a * c;
 
-    if (eq(D, .0))
-        return (sSolution){ONE, -b / (2 * a), .0};
-    if (D < 0)
-        return (sSolution){ZERO, .0, .0};
-    return (sSolution){TWO, (-b - sqrt(D)) / (2 * a), (-b + sqrt(D)) / (2 * a)};
+    if (!cmp_double(D, .0))
+        *solution = {1, -b / (2 * a), .0};
+    else if (D < 0)
+        *solution = {0, .0, .0};
+    else
+        *solution = {2, (-b - sqrt(D)) / (2 * a), (-b + sqrt(D)) / (2 * a)};
+
+    return 0;
 }
 
-sSolution deg0(sParams params);  // Решает уравнение c = 0
-
-sSolution deg1(sParams params)
+int solve_deg1(sParams params, sSolution* solution)
 /*
  * Решает уравнение bx + c = 0.
  *
- * Причем уравнение не обязательно линейное,
- * т. е. возможно b = 0.
+ * Если b = 0, то падает на assert'е
  *
- * Принимает параметры в виде sParams, возвращает
- * решение в виде sSolution.
+ * Принимает параметры в виде sParams и указатель
+ * для записи решения, возвращает 0.
  */
 {
 
-    if (eq(params.b, .0))
-        return deg0(params);
+    assert(!cmp_double(params.a, .0));
+    assert(cmp_double(params.b, .0));
 
     double b = params.b;
     double c = params.c;
-    return (sSolution){ONE, -c / b, .0};
+    *solution = {1, -c / b, .0};
+    return 0;
 }
 
-sSolution deg0(sParams params)
+int solve_deg0(sParams params, sSolution* solution)
 /*
  * Решает уравнение c = 0.
  *
  * Причем c  может быть любым.
  *
- * Принимает параметры в виде sParams, возвращает
- * решение в виде sSolution.
+ * Принимает параметры в виде sParams и указатель
+ * для записи решения, возвращает 0.
  */
 {
-    return (eq(params.c, .0)) ? (sSolution){INFTY, .0, .0} : (sSolution){ZERO, .0, .0};
-    // QUESTION - нафига приведение типа?
+    assert(!cmp_double(params.a, .0));
+    assert(!cmp_double(params.b, .0));
+
+    *solution =  (cmp_double(params.c, .0)) ? (sSolution){0, .0, .0} : (sSolution){INFTY, .0, .0};
+    // QUESTION - поч не работает без приведения?
+    return 0;
 }
 //-------------------------------------^-решение уравнения-^---------------------------------------
+
+//-------------------------------------v-общее (реализации)-v--------------------------------------
+int cmp_double(double a, double b)
+{
+    if (fabs(a-b) < EPS)
+        return 0;
+    return a<b?-1:1;
+}
+//-------------------------------------^-общее (реализации)-^--------------------------------------
 
