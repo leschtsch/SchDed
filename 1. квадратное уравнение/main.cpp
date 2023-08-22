@@ -11,6 +11,7 @@
 //-----------------------------------v-includ'ы и объявления-v-------------------------------------
 #include "TXLib.h"
 
+#include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,16 +43,16 @@ typedef struct
 
 #define EPS 1e-6
 #define eq(a, b) (fabs((a) - (b)) < EPS)
+//-----------------------------------^-includ'ы и объявления-^-------------------------------------
 
 int input(int argc, char *argv[], sParams* params); // Считывает параметры уравнения
 sSolution deg2(sParams params);        // Решает уравнение ax^2 + bx +c = 0
 void fix_zero(sSolution *solution);   // Поправляет -0
 void output(sSolution solution);       // Выводит решение
-//-----------------------------------^-includ'ы и объявления-^-------------------------------------
 
 int main(int argc, char *argv[])
 {
-    // QUESTION - мб передавать структуры по ссылке?
+
     sParams params = {.0, .0, .0};
     if (!input(argc, argv, &params))
         return -1;
@@ -77,6 +78,8 @@ int input(int argc, char *argv[], sParams* params)
  * возвращает1 в случае успеха, иначе 0.
  */
 {
+    assert(params!=NULL);
+
     if (argc > 1)
         return input_cl(argc, argv, params);
     printf("Введите коэффициэнты - три числа:\n");
@@ -98,13 +101,15 @@ int input_cl(int argc, char *argv[], sParams* params)
  * возвращает1 в случае успеха, иначе 0.
  */
 {
+    assert(params!=NULL);
+
     if (argc < 4)
     {
         printf("Недостаточно аргументов командной строки");
         return 0;
     }
 
-    char * p;
+    char * p = NULL;
 
     params->a = strtod(argv[1],&p);
     if (*p != '\0')
