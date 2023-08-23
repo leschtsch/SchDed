@@ -13,7 +13,9 @@
  * @brief первый и единственный файл
  */
 
-//TODO - тесты
+// TODO - тесты
+// TODO - флаг для тестов
+// TODO - readme
 
 //-----------------------------------------------------v-общее-v-------------------------------------------------------
 
@@ -26,17 +28,18 @@
 
 const int INFTY = -1; ///< значение для бесконечности корней
 const double EPS = 1e-6; ///<  точность для сравненияф double
+const double TEST_PRANGE = 1e3; ///< расброс параметров теста
 
 /**
- * @brief сравнивает два double
+ * @brief случайное число от a до b
  *
- * @param [in] a первое число
- * @param [in] b второе число
- * @return -1, 0, 1 если а <, ==, > b
+ * a должо быть <= b, хотя формула и работает если b > a.
  *
- * @see EPS
+ * @param [in] a нижняя граница
+ * @param [in] b верхняя граница
+ * @return случайное число от a до b
  */
-int cmp_double(double a, double b);
+double random_ab(double a, double b);
 
 /**
  * @brief структура для записи решения
@@ -73,14 +76,38 @@ typedef struct
 enum errors
 {
     OK,             ///< ошибки нет
-    ERR_BAD_INPUT,  ///< ошибка ввода, см ниже
+    ERR_BAD_INPUT,  ///< ошибка ввода, см полное описание
     ERR_BAD_CL,     ///< агрумент командной строки не число
     ERR_LACK_CL,    ///< мало аргументов командной строки
 };
 
+/**
+ * @brief сравнивает два double
+ *
+ * @param [in] a первое число
+ * @param [in] b второе число
+ * @return -1, 0, 1 если а <, ==, > b
+ *
+ * @see EPS
+ */
+int cmp_double(double a, double b);
+
+/**
+ * @brief сравнивает две структуры sSolution
+ *
+ * @param [in] a указатель на первую структуру
+ * @param [in] b указатель на вторую структуру
+ * @return 0, если структуры одинаковы,
+ * -1 если первый различный элемент в них в первой
+ * структуре меньше, 1 иначе.
+ */
+int cmp_sSolution(sSolution * a, sSolution * b);
+
 //-----------------------------------------------------^-общее-^-------------------------------------------------------
 
 //---------------------------------------------v-main и вызываемое ею-v------------------------------------------------
+
+int run_tests(int tests_n);
 
 /**
  * @brief Считывает параметры уравнения
@@ -114,15 +141,15 @@ int input(int argc, char *argv[], sParams* params);
 */
 void solve_general(sParams params, sSolution* solution);
 
-
-
 /**
  * @brief выводит решение
+ *
+ * @note меняет -0 на 0 в solution
  *
  * Вывод должен быть красивым и удобным, что
  * субъективно. Поэтому я положился на интуицию.
  *
- * @param solution - решение, которое надо вывести
+ * @param [in, out] solution - решение, которое надо вывести
  */
 void output(sSolution solution);
 
@@ -132,7 +159,7 @@ void output(sSolution solution);
  * Ошибки пока только ошибки пользователя.
  * А обработка - только printf.
  *
- * @param err_code код ошибки
+ * @param [in] err_code код ошибки
  *
  * @see errors
  */
@@ -143,6 +170,10 @@ void process_error(int err_code);
  */
 int main(int argc, char *argv[])
 {
+    // FIXME - это временно!!! :
+    run_tests(1000);
+    return 0;
+
     sParams params = {.0, .0, .0};
     int input_res = input(argc, argv, &params);
     if (input_res)
@@ -157,6 +188,7 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
 //---------------------------------------------^-main и вызываемое ею-^------------------------------------------------
 
 //-------------------------------------------------v-ввод и вывод-v----------------------------------------------------
@@ -220,7 +252,7 @@ int input_cl(int argc, char *argv[], sParams* params)
  * отрицательный ноль. Технически верно, но для
  * человека неприятно.
  *
- * @param solution структура с решением, где надо поправлять
+ * @param [in, out] solution структура с решением, где надо поправлять
  */
 void fix_zero(sSolution *solution);
 
@@ -298,20 +330,16 @@ void solve_deg1(sParams params, sSolution* solution);
  * @return Ничего, так как я не придумал чего-либо осмысленного
  */
 void solve_deg0(sParams params, sSolution* solution);
+//TODO - структуру по ссылке
 
 void solve_general(sParams params, sSolution* solution)
 {
     if (cmp_double(params.a, 0))
-    {
         solve_deg2(params, solution);
-        return;
-    }
-    if (cmp_double(params.b, 0))
-    {
+    else if (cmp_double(params.b, 0))
         solve_deg1(params, solution);
-        return;
-    }
-    solve_deg0(params, solution);
+    else
+        solve_deg0(params, solution);
 }
 
 void solve_deg2(sParams params, sSolution* solution)
@@ -349,17 +377,107 @@ void solve_deg0(sParams params, sSolution* solution)
     assert(!cmp_double(params.b, .0));
 
     *solution =  (cmp_double(params.c, .0)) ? (sSolution){0, .0, .0} : (sSolution){INFTY, .0, .0};
-    // QUESTION - поч не работает без приведения?
 }
+
 //-----------------------------------------------^-решение уравнения-^-------------------------------------------------
 
+//-----------------------------------------------------v-тесты-v-------------------------------------------------------
+
+void gen_test(sParams * params, sSolution * solution);
+
+/**
+ * @brief проверяет правильность работы solve_general
+ *
+ * @param params       параметры тестового уравнения
+ * @param ref_solution правильные ответы тестового уравнения
+ * @return 0 в случае успеха, 1 в случае провала.
+ *
+ * @see solve_general
+ */
+int run_test(sParams params, sSolution ref_solution);
+
+int run_tests(int tests_n)
+{
+    int tests_failed = 0;
+    for(;tests_n;tests_n--)
+    {
+        sParams params = {.0, .0, .0};
+        sSolution ref_solution = {0, .0, .0};
+        gen_test(&params, &ref_solution);
+        if (run_test(params, ref_solution))
+            tests_failed++;
+    }
+    return tests_failed;
+} // TODO - доделать, док
+
+void gen_test_0_roots(sParams * params, sSolution * solution);
+void gen_test_1_root_deg1(sParams * params, sSolution * solution);
+void gen_test_1_root_deg2(sParams * params, sSolution * solution);
+void gen_test_2_roots(sParams * params, sSolution * solution);
+void gen_test_INFTY_roots(sParams * params, sSolution * solution);
+
+void gen_test(sParams * params, sSolution * solution)
+{
+    switch (rand() % 1) // не лучший способ, но простой
+    {
+    case 0:
+        gen_test_0_roots(params, solution);
+        break;
+
+    default:
+        fprintf(stderr,"\nERRROR: gen_test(): лол как? БК\n"); //TODO - надпись получше
+        break;
+    }
+} //TODO - доделать
+
+void gen_test_0_roots(sParams * params, sSolution * solution)
+{
+    double c = random_ab(-TEST_PRANGE, TEST_PRANGE);
+    while (!cmp_double(c, .0)) // вероятность этого крайне мала 1!!1!1
+        c = random_ab(-TEST_PRANGE, TEST_PRANGE);
+
+    *params = {.0, .0, c};
+    *solution = {0, .0, .0};
+}
+
+int run_test(sParams params, sSolution ref_solution)
+{
+    sSolution test_solution = {0, .0, .0};
+    solve_general(params, &test_solution);
+    if (cmp_sSolution(&ref_solution, &test_solution))
+    {
+        fprintf(stderr,
+                "TEST_FAILED:\n"
+                "\tПараметры: %f\t %f\t %f\n"
+                "\tОжидаемое решение: %d\t %f\t %f\n"
+                "\tОтвет функции:     %d\t %f\t %f\n",
+                params.a, params.b, params.c,
+                ref_solution.rnum, ref_solution.x1, ref_solution.x2,
+                test_solution.rnum, test_solution.x1, test_solution.x2
+                );
+        return 1;
+    } else
+        return 0;
+} // TODO - док
+
+//-----------------------------------------------------^-тесты-^-------------------------------------------------------
+
 //-----------------------------------------------v-общее (реализации)-v------------------------------------------------
+
 int cmp_double(double a, double b)
 {
-    if (fabs(a-b) < EPS)
+    if (fabs(a - b) < EPS)
         return 0;
-    return a<b?-1:1;
+    return (a < b) ? -1 : 1;
 }
+
+int cmp_sSolution(sSolution* a, sSolution* b)
+{
+    if (a->rnum != b->rnum)
+        return (a->rnum < b->rnum) ? -1 : 1;
+    int cmp_res = cmp_double(a->x1, b->x1);
+    return (cmp_res) ? cmp_res:cmp_double(a->x2, b->x2);
+} //TODO - ассерты правильности структур в этой функции и после всяких return'ов
 
 void process_error(int err_code)
 {
@@ -382,5 +500,12 @@ void process_error(int err_code)
         break;
     }
 }
+
+double random_ab(double a, double b)
+{
+    assert(cmp_double(a, b) < 1);
+    return (double) rand() / RAND_MAX * (b - a) + a;
+}
+
 //-----------------------------------------------^-общее (реализации)-^------------------------------------------------
 
