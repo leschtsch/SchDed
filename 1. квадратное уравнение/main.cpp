@@ -27,19 +27,10 @@
 #include <stdlib.h>
 
 const int INFTY = -1; ///< значение для бесконечности корней
-const double EPS = 1e-6; ///<  точность для сравненияф double
+const double EPS = 1e-6; ///<  точность double
 const double TEST_PRANGE = 1e3; ///< расброс параметров теста
+const int TESTS_N = 1000000; ///< кол-во тестов по умолчанию
 
-/**
- * @brief случайное число от a до b
- *
- * a должо быть <= b, хотя формула и работает если b > a.
- *
- * @param [in] a нижняя граница
- * @param [in] b верхняя граница
- * @return случайное число от a до b
- */
-double random_ab(double a, double b);
 
 /**
  * @brief структура для записи решения
@@ -103,6 +94,32 @@ int cmp_double(double a, double b);
  */
 int cmp_sSolution(sSolution * a, sSolution * b);
 
+/**
+ * @brief случайное число от a до b
+ *
+ * a должо быть <= b, хотя формула и работает если b > a.
+ *
+ * @param [in] a нижняя граница
+ * @param [in] b верхняя граница
+ * @return случайное число от a до b
+ */
+double random_ab(double a, double b);
+
+/**
+ * @brief случайное число от a до b, кроме 0
+ *
+ * a должо быть <= b, хотя формула и работает если b > a.
+ *
+ * @param [in] a нижняя граница
+ * @param [in] b верхняя граница
+ * @return случайное число от a до b
+ */
+double random_ab_nz(double a, double b);
+
+double absmax(double a, double b, double c);
+
+void swap (double * a, double * b);
+
 //-----------------------------------------------------^-общее-^-------------------------------------------------------
 
 //---------------------------------------------v-main и вызываемое ею-v------------------------------------------------
@@ -136,9 +153,7 @@ int input(int argc, char *argv[], sParams* params);
  * @param [in]  params      параметры уравнения
  * @param [out] solution    указатель на структуру для записи решения
  * @return Ничего, так как я не придумал чего-либо осмысленного
- *
- * @see solve_deg2, solve_deg1, solve_deg0
-*/
+ */
 void solve_general(sParams params, sSolution* solution);
 
 /**
@@ -171,7 +186,7 @@ void process_error(int err_code);
 int main(int argc, char *argv[])
 {
     // FIXME - это временно!!! :
-    run_tests(1000);
+    printf("tests failed: %d", run_tests(TESTS_N)); //FIXME - точность (решения или теста?)
     return 0;
 
     sParams params = {.0, .0, .0};
@@ -277,7 +292,8 @@ void output(sSolution solution)
         printf("бесконечно много корней.\n");
         break;
     default:
-        fprintf(stderr, "\nERROR: main(): solution.rnum == %d\n", solution.rnum);
+        fprintf(stderr, "\nERROR: output(): solution.rnum == %d\n", solution.rnum);
+        fprintf(stderr, "\nERROR: output(): solution.rnum == %d\n", solution.rnum);
         break;
     }
 }
@@ -355,8 +371,10 @@ void solve_deg2(sParams params, sSolution* solution)
         *solution = {1, -b / (2 * a), .0};
     else if (D < 0)
         *solution = {0, .0, .0};
-    else
+    else if (a>0)
         *solution = {2, (-b - sqrt(D)) / (2 * a), (-b + sqrt(D)) / (2 * a)};
+    else*solution = {2, (-b + sqrt(D)) / (2 * a), (-b - sqrt(D)) / (2 * a)};
+
 
 }
 
@@ -391,8 +409,6 @@ void gen_test(sParams * params, sSolution * solution);
  * @param params       параметры тестового уравнения
  * @param ref_solution правильные ответы тестового уравнения
  * @return 0 в случае успеха, 1 в случае провала.
- *
- * @see solve_general
  */
 int run_test(sParams params, sSolution ref_solution);
 
@@ -410,7 +426,8 @@ int run_tests(int tests_n)
     return tests_failed;
 } // TODO - доделать, док
 
-void gen_test_0_roots(sParams * params, sSolution * solution);
+void gen_test_0_roots_deg0(sParams * params, sSolution * solution);
+void gen_test_0_roots_deg2(sParams * params, sSolution * solution);
 void gen_test_1_root_deg1(sParams * params, sSolution * solution);
 void gen_test_1_root_deg2(sParams * params, sSolution * solution);
 void gen_test_2_roots(sParams * params, sSolution * solution);
@@ -418,10 +435,26 @@ void gen_test_INFTY_roots(sParams * params, sSolution * solution);
 
 void gen_test(sParams * params, sSolution * solution)
 {
-    switch (rand() % 1) // не лучший способ, но простой
+    switch (rand() % 5) // не лучший способ, но простой
     {
     case 0:
-        gen_test_0_roots(params, solution);
+        gen_test_0_roots_deg0(params, solution);
+        break;
+
+    case 1:
+        gen_test_0_roots_deg0(params, solution);
+        break;
+
+    case 2:
+        gen_test_1_root_deg1(params, solution);
+        break;
+
+    case 3:
+        gen_test_1_root_deg2(params, solution);
+        break;
+
+    case 4:
+        gen_test_2_roots(params, solution);
         break;
 
     default:
@@ -430,14 +463,79 @@ void gen_test(sParams * params, sSolution * solution)
     }
 } //TODO - доделать
 
-void gen_test_0_roots(sParams * params, sSolution * solution)
+void gen_test_0_roots_deg0(sParams * params, sSolution * solution)
 {
-    double c = random_ab(-TEST_PRANGE, TEST_PRANGE);
-    while (!cmp_double(c, .0)) // вероятность этого крайне мала 1!!1!1
-        c = random_ab(-TEST_PRANGE, TEST_PRANGE);
-
+    double c = random_ab_nz(-TEST_PRANGE, TEST_PRANGE);
     *params = {.0, .0, c};
     *solution = {0, .0, .0};
+}
+
+void gen_test_0_roots_deg2(sParams * params, sSolution * solution)
+{
+    double a = random_ab(EPS, TEST_PRANGE);
+    double b = random_ab(-TEST_PRANGE, TEST_PRANGE);
+
+    double vx = - b / (2 * a); // x вершины
+    double vy  = a * vx * vx + b * vx; // y вершины
+
+    double c = random_ab(-vy, vy + TEST_PRANGE);
+
+    double norm = absmax(a, b, c);
+    a = a / norm * TEST_PRANGE;
+    b = b / norm * TEST_PRANGE;
+    c = c / norm * TEST_PRANGE;
+
+    *params = (sParams){a, b, c};
+    *solution = {0, .0, .0};
+
+}
+
+void gen_test_1_root_deg1(sParams * params, sSolution * solution)
+{
+    double x = random_ab_nz(-TEST_PRANGE, TEST_PRANGE); // точки пересечения прямой с осями
+    double y = random_ab_nz(-TEST_PRANGE, TEST_PRANGE);
+
+    *params = {.0, - y / x, y};
+    *solution = {1, x, .0};
+}
+
+void gen_test_1_root_deg2(sParams * params, sSolution * solution)
+{
+    double x = random_ab(-TEST_PRANGE, TEST_PRANGE);
+
+    double a = random_ab_nz(-TEST_PRANGE, TEST_PRANGE);
+    double b = -2 * x * a;
+    double c = x * x * a;
+
+    double norm = absmax(a, b, c);
+    a = a / norm * TEST_PRANGE;
+    b = b / norm * TEST_PRANGE;
+    c = c / norm * TEST_PRANGE;
+
+    *params= (sParams){a, b, c};
+    *solution = {1, x, .0};
+}
+
+void gen_test_2_roots(sParams * params, sSolution * solution)
+{
+    double x1 = random_ab(-TEST_PRANGE, TEST_PRANGE);
+    double x2 = random_ab(-TEST_PRANGE, TEST_PRANGE);
+    while (!cmp_double(x1, x2))
+        x2 = random_ab(-TEST_PRANGE, TEST_PRANGE);
+    if (x1 > x2)
+        swap(&x1, &x2);
+
+    double a = random_ab_nz(-TEST_PRANGE, TEST_PRANGE);
+    double b = (-x1 - x2) * a;
+    double c = x1 * x2 * a;
+
+    double norm = absmax(a, b, c);
+    a = a / norm * TEST_PRANGE;
+    b = b / norm * TEST_PRANGE;
+    c = c / norm * TEST_PRANGE;
+
+    *params= (sParams){a, b, c};
+    *solution = {2, x1, x2};
 }
 
 int run_test(sParams params, sSolution ref_solution)
@@ -503,9 +601,32 @@ void process_error(int err_code)
 
 double random_ab(double a, double b)
 {
-    assert(cmp_double(a, b) < 1);
+    assert(cmp_double(a, b) < 0);
+    if (!cmp_double(a, b))
+        return a;
     return (double) rand() / RAND_MAX * (b - a) + a;
 }
 
-//-----------------------------------------------^-общее (реализации)-^------------------------------------------------
+double random_ab_nz(double a, double b)
+{
+    double res = random_ab(a, b);
+    while (!cmp_double(res, .0))// вероятность этого крайне мала 1!!1!1
+        res = random_ab(a, b);
+    return res;
+};
 
+double absmax(double a, double b, double c) // FIXME - va_list
+{
+    a=fabs(a);
+    b=fabs(b);
+    c=fabs(c);
+    return max(max(a,b), c);
+}// TODO - упорядочить как-то. по алфавиту?
+
+void swap (double * a, double * b)
+{
+    double tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+//-----------------------------------------------^-общее (реализации)-^------------------------------------------------
