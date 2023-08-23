@@ -15,7 +15,7 @@
 
 //TODO - тесты
 
-//-------------------------------------------v-общее-v---------------------------------------------
+//-----------------------------------------------------v-общее-v-------------------------------------------------------
 
 #include "TXLib.h"
 
@@ -33,6 +33,7 @@ const double EPS = 1e-6; ///<  точность для сравненияф doub
  * @param [in] a первое число
  * @param [in] b второе число
  * @return -1, 0, 1 если а <, ==, > b
+ *
  * @see EPS
  */
 int cmp_double(double a, double b);
@@ -77,9 +78,9 @@ enum errors
     ERR_LACK_CL,    ///< мало аргументов командной строки
 };
 
-//-------------------------------------------^-общее-^---------------------------------------------
+//-----------------------------------------------------^-общее-^-------------------------------------------------------
 
-//-----------------------------------v-main и вызываемое ею-v--------------------------------------
+//---------------------------------------------v-main и вызываемое ею-v------------------------------------------------
 
 /**
  * @brief Считывает параметры уравнения
@@ -95,7 +96,8 @@ enum errors
  * @param [out] params  указатель на структуру, в которую
  *                       нужно запсать считанные параметры
  * @return код возврата
- * @see sParams, errors
+ *
+ * @see errors
  */
 int input(int argc, char *argv[], sParams* params);
 
@@ -107,14 +109,38 @@ int input(int argc, char *argv[], sParams* params);
  * @param [in]  params      параметры уравнения
  * @param [out] solution    указатель на структуру для записи решения
  * @return Ничего, так как я не придумал чего-либо осмысленного
- * @see sParams, sSolution, solve_deg2, solve_deg1, solve_deg0
+ *
+ * @see solve_deg2, solve_deg1, solve_deg0
 */
 void solve_general(sParams params, sSolution* solution);
 
 
-void fix_zero(sSolution *solution);   // Поправляет -0
-void output(sSolution solution);       // Выводит решение
+
+/**
+ * @brief выводит решение
+ *
+ * Вывод должен быть красивым и удобным, что
+ * субъективно. Поэтому я положился на интуицию.
+ *
+ * @param solution - решение, которое надо вывести
+ */
+void output(sSolution solution);
+
+/**
+ * @brief обработка ошибок
+ *
+ * Ошибки пока только ошибки пользователя.
+ * А обработка - только printf.
+ *
+ * @param err_code код ошибки
+ *
+ * @see errors
+ */
 void process_error(int err_code);
+
+/**
+ * @see input, process_error, solve_general, output
+ */
 int main(int argc, char *argv[])
 {
     sParams params = {.0, .0, .0};
@@ -127,15 +153,29 @@ int main(int argc, char *argv[])
 
     sSolution solution = {0, .0, .0};
     solve_general(params, &solution);
-    fix_zero(&solution);
     output(solution);
 
     return 0;
 }
-//-----------------------------------^-main и вызываемое ею-^--------------------------------------
+//---------------------------------------------^-main и вызываемое ею-^------------------------------------------------
 
-//---------------------------------------v-ввод и вывод-v------------------------------------------
+//-------------------------------------------------v-ввод и вывод-v----------------------------------------------------
+
+/**
+ * @brief считывает аргументы командной строки
+ *
+ * Разрешено вводить только три числа. Никаких флагов!
+ *
+ * @param [in]  argc    кол-во аргументов командной строки
+ * @param [in]  argv    аргументы командной строки
+ * @param [out] params  указатель на структуру, в которую
+ *                       нужно запсать считанные параметры
+ * @return код возврата
+ *
+ * @see errors
+ */
 int input_cl(int argc, char *argv[], sParams* params);
+
 int input(int argc, char *argv[], sParams* params)
 {
     assert(params!=NULL);
@@ -152,14 +192,6 @@ int input(int argc, char *argv[], sParams* params)
 }
 
 int input_cl(int argc, char *argv[], sParams* params)
-/*
- * Считывает аргументы командной строки.
- *
- * Разрешено вводить только три числа. Никаких флагов!
- *
- * Принимает argc, argv и структуру для записи параметров.
- * возвращает1 в случае успеха, иначе 0.
- */
 {
     assert(params!=NULL);
 
@@ -181,37 +213,21 @@ int input_cl(int argc, char *argv[], sParams* params)
     return OK;
 }
 
-void fix_zero(sSolution *solution)
-/*sParams* params
- * Поправляет -0.
+/**
+ * @brief поправляет -0
  *
  * В некоторых случаях в ответ записывается
  * отрицательный ноль. Технически верно, но для
  * человека неприятно.
  *
- * Принимает указатель на структуру с ответом и
- * заменяет -0.0 на 0.0 .
+ * @param solution структура с решением, где надо поправлять
  */
-{
-    assert(solution != NULL);
-
-    if (!cmp_double(solution->x1, .0))
-        solution->x1 = .0;
-    if (!cmp_double(solution->x2, .0))
-        solution->x2 = .0;
-}
+void fix_zero(sSolution *solution);
 
 void output(sSolution solution)
-/*
- * Выводит решение.
- *
- * Вывод должен быть красивым и удобным, что
- * субъективно. Поэтому я положился на интуицию.
- *
- * Принимает решение в виде sSolution,
- * ничего не возвращает.
- */
 {
+    fix_zero(&solution);
+
     printf("У уравнения ");
 
     switch (solution.rnum)
@@ -233,12 +249,55 @@ void output(sSolution solution)
         break;
     }
 }
-//---------------------------------------^-ввод и вывод-^------------------------------------------
 
-//-------------------------------------v-решение уравнения-v---------------------------------------
-void solve_deg2(sParams params, sSolution* solution); // Решает уравнение ax^2 + bx +c = 0
-void solve_deg1(sParams params, sSolution* solution); // Решает уравнение ax + b = 0
-void solve_deg0(sParams params, sSolution* solution); // Решает уравнение c = 0
+void fix_zero(sSolution *solution)
+{
+    assert(solution != NULL);
+
+    if (!cmp_double(solution->x1, .0))
+        solution->x1 = .0;
+    if (!cmp_double(solution->x2, .0))
+        solution->x2 = .0;
+}
+
+//-------------------------------------------------^-ввод и вывод-^----------------------------------------------------
+
+//-----------------------------------------------v-решение уравнения-v-------------------------------------------------
+
+/**
+ * @brief Решает уравнение ax^2 + bx + c = 0.
+ *
+ * @note Если params.a == 0, то падает на assert'е
+ *
+ * @param [in]  params      параметры уравнения
+ * @param [out] solution    указатель на структуру для записи решения
+ * @return Ничего, так как я не придумал чего-либо осмысленного
+ */
+void solve_deg2(sParams params, sSolution* solution);
+
+/**
+ * @brief Решает уравнение bx + c = 0.
+ *
+ * @note Если params.b == 0 или params.a != 0, то падает на assert'е
+ *
+ * @param [in]  params      параметры уравнения
+ * @param [out] solution    указатель на структуру для записи решения
+ * @return Ничего, так как я не придумал чего-либо осмысленного
+ */
+void solve_deg1(sParams params, sSolution* solution);
+
+/**
+ * @brief Решает уравнение c = 0.
+ *
+ * @note Если params.b != 0 или params.a != 0, то падает на assert'е
+ *
+ * Она состоит из одного тернарника, но для общности сделал так
+ *
+ * @param [in]  params      параметры уравнения
+ * @param [out] solution    указатель на структуру для записи решения
+ * @return Ничего, так как я не придумал чего-либо осмысленного
+ */
+void solve_deg0(sParams params, sSolution* solution);
 
 void solve_general(sParams params, sSolution* solution)
 {
@@ -256,14 +315,6 @@ void solve_general(sParams params, sSolution* solution)
 }
 
 void solve_deg2(sParams params, sSolution* solution)
-/*
- * Решает уравнение ax^2 + bx + c = 0.
- *
- * Если a = 0, то падает на assert'е
- *
- * Принимает параметры в виде sParams и указатель
- * для записи решения, возвращает 0.
- */
 {
     assert(cmp_double(params.a, .0));
 
@@ -282,14 +333,6 @@ void solve_deg2(sParams params, sSolution* solution)
 }
 
 void solve_deg1(sParams params, sSolution* solution)
-/*
- * Решает уравнение bx + c = 0.
- *
- * Если b = 0, то падает на assert'е
- *
- * Принимает параметры в виде sParams и указатель
- * для записи решения, возвращает 0.
- */
 {
 
     assert(!cmp_double(params.a, .0));
@@ -301,14 +344,6 @@ void solve_deg1(sParams params, sSolution* solution)
 }
 
 void solve_deg0(sParams params, sSolution* solution)
-/*
- * Решает уравнение c = 0.
- *
- * Причем c  может быть любым.
- *
- * Принимает параметры в виде sParams и указатель
- * для записи решения, возвращает 0.
- */
 {
     assert(!cmp_double(params.a, .0));
     assert(!cmp_double(params.b, .0));
@@ -316,9 +351,9 @@ void solve_deg0(sParams params, sSolution* solution)
     *solution =  (cmp_double(params.c, .0)) ? (sSolution){0, .0, .0} : (sSolution){INFTY, .0, .0};
     // QUESTION - поч не работает без приведения?
 }
-//-------------------------------------^-решение уравнения-^---------------------------------------
+//-----------------------------------------------^-решение уравнения-^-------------------------------------------------
 
-//-------------------------------------v-общее (реализации)-v--------------------------------------
+//-----------------------------------------------v-общее (реализации)-v------------------------------------------------
 int cmp_double(double a, double b)
 {
     if (fabs(a-b) < EPS)
@@ -347,5 +382,5 @@ void process_error(int err_code)
         break;
     }
 }
-//-------------------------------------^-общее (реализации)-^--------------------------------------
+//-----------------------------------------------^-общее (реализации)-^------------------------------------------------
 
