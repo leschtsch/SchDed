@@ -26,10 +26,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const int INFTY = -1; ///< значение для бесконечности корней
-const double EPS = 1e-6; ///<  точность double
-const double TEST_PRANGE = 1e3; ///< расброс параметров теста
-const int TESTS_N = 1000000; ///< кол-во тестов по умолчанию
+const int INFTY = -1;           ///< значение для бесконечности корней
+const double EPS = 1e-6;        ///<  точность double
+
+const double TEST_RANGE = 1e3;  /**< @brief некоторый разброс для теста
+                                 *
+                                 * чем больше это значение, тем больше
+                                 * параметры уравнеения в тестах,
+                                 * но конкретных ограничений нет
+                                 * @see gen_test
+                                 */
+
+const int TESTS_N = (int) 1e6;  ///< кол-во тестов по умолчанию
 
 
 /**
@@ -435,7 +443,7 @@ void gen_test_INFTY_roots(sParams * params, sSolution * solution);
 
 void gen_test(sParams * params, sSolution * solution)
 {
-    switch (rand() % 5) // не лучший способ, но простой
+    switch (rand() % 6) // не лучший способ, но простой
     {
     case 0:
         gen_test_0_roots_deg0(params, solution);
@@ -457,6 +465,10 @@ void gen_test(sParams * params, sSolution * solution)
         gen_test_2_roots(params, solution);
         break;
 
+    case 5:
+        gen_test_INFTY_roots(params, solution);
+        break;
+
     default:
         fprintf(stderr,"\nERRROR: gen_test(): лол как? БК\n"); //TODO - надпись получше
         break;
@@ -465,25 +477,29 @@ void gen_test(sParams * params, sSolution * solution)
 
 void gen_test_0_roots_deg0(sParams * params, sSolution * solution)
 {
-    double c = random_ab_nz(-TEST_PRANGE, TEST_PRANGE);
+    double c = random_ab_nz(-TEST_RANGE, TEST_RANGE);
     *params = {.0, .0, c};
     *solution = {0, .0, .0};
 }
 
 void gen_test_0_roots_deg2(sParams * params, sSolution * solution)
 {
-    double a = random_ab(EPS, TEST_PRANGE);
-    double b = random_ab(-TEST_PRANGE, TEST_PRANGE);
+    double a = random_ab(EPS, TEST_RANGE);
+    double b = random_ab(-TEST_RANGE, TEST_RANGE);
 
-    double vx = - b / (2 * a); // x вершины
-    double vy  = a * vx * vx + b * vx; // y вершины
+    double y  = - (b * b) / (4 * a); // y вершины, если  c = 0
+    /*
+     *  y                           =
+     *  ax^2+bx                     =
+     *  a*(-b/2a)^2 + b*(-b/2a)     =
+     *  a* b^2 / 4a^2 - b^2 / 2a    =
+     *  b^2 / 4a - 2b^2 / 4a        =
+     *  - b^2 / 4a
+     *
+     * "Размерность" - param^1
+     */
 
-    double c = random_ab(-vy, vy + TEST_PRANGE);
-
-    double norm = absmax(a, b, c);
-    a = a / norm * TEST_PRANGE;
-    b = b / norm * TEST_PRANGE;
-    c = c / norm * TEST_PRANGE;
+    double c = random_ab(-y+EPS, y + TEST_RANGE);
 
     *params = (sParams){a, b, c};
     *solution = {0, .0, .0};
@@ -492,8 +508,8 @@ void gen_test_0_roots_deg2(sParams * params, sSolution * solution)
 
 void gen_test_1_root_deg1(sParams * params, sSolution * solution)
 {
-    double x = random_ab_nz(-TEST_PRANGE, TEST_PRANGE); // точки пересечения прямой с осями
-    double y = random_ab_nz(-TEST_PRANGE, TEST_PRANGE);
+    double x = random_ab_nz(-TEST_RANGE, TEST_RANGE); // точки пересечения прямой с осями
+    double y = random_ab_nz(-TEST_RANGE, TEST_RANGE);
 
     *params = {.0, - y / x, y};
     *solution = {1, x, .0};
@@ -501,16 +517,16 @@ void gen_test_1_root_deg1(sParams * params, sSolution * solution)
 
 void gen_test_1_root_deg2(sParams * params, sSolution * solution)
 {
-    double x = random_ab(-TEST_PRANGE, TEST_PRANGE);
+    double x = random_ab(-TEST_RANGE, TEST_RANGE);
 
-    double a = random_ab_nz(-TEST_PRANGE, TEST_PRANGE);
+    double a = random_ab_nz(-TEST_RANGE, TEST_RANGE);
     double b = -2 * x * a;
     double c = x * x * a;
 
     double norm = absmax(a, b, c);
-    a = a / norm * TEST_PRANGE;
-    b = b / norm * TEST_PRANGE;
-    c = c / norm * TEST_PRANGE;
+    a = a / norm * TEST_RANGE;
+    b = b / norm * TEST_RANGE;
+    c = c / norm * TEST_RANGE;
 
     *params= (sParams){a, b, c};
     *solution = {1, x, .0};
@@ -518,24 +534,30 @@ void gen_test_1_root_deg2(sParams * params, sSolution * solution)
 
 void gen_test_2_roots(sParams * params, sSolution * solution)
 {
-    double x1 = random_ab(-TEST_PRANGE, TEST_PRANGE);
-    double x2 = random_ab(-TEST_PRANGE, TEST_PRANGE);
+    double x1 = random_ab(-TEST_RANGE, TEST_RANGE);
+    double x2 = random_ab(-TEST_RANGE, TEST_RANGE);
     while (!cmp_double(x1, x2))
-        x2 = random_ab(-TEST_PRANGE, TEST_PRANGE);
+        x2 = random_ab(-TEST_RANGE, TEST_RANGE);
     if (x1 > x2)
         swap(&x1, &x2);
 
-    double a = random_ab_nz(-TEST_PRANGE, TEST_PRANGE);
+    double a = random_ab_nz(-TEST_RANGE, TEST_RANGE);
     double b = (-x1 - x2) * a;
     double c = x1 * x2 * a;
 
-    double norm = absmax(a, b, c);
-    a = a / norm * TEST_PRANGE;
-    b = b / norm * TEST_PRANGE;
-    c = c / norm * TEST_PRANGE;
+    /*double norm = absmax(a, b, c);
+    a = a / norm * TEST_RANGE;
+    b = b / norm * TEST_RANGE;
+    c = c / norm * TEST_RANGE;*/
 
     *params= (sParams){a, b, c};
     *solution = {2, x1, x2};
+}
+
+void gen_test_INFTY_roots(sParams * params, sSolution * solution)
+{
+    *params = {.0, .0, .0};
+    *solution = {INFTY, .0, .0};
 }
 
 int run_test(sParams params, sSolution ref_solution)
