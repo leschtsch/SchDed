@@ -27,9 +27,10 @@
 #include <stdlib.h>
 
 const int INFTY = -1;           ///< значение для бесконечности корней
-const double EPS = 1e-6;        ///<  точность double
+const double EPS = 1e-6;        ///<  точность double и просто маленькое значение
 
-const double TEST_RANGE = 1e3;  /**< @brief некоторый разброс для теста
+const double TEST_RANGE = 1e3;  /**<
+                                 * @brief некоторый разброс для теста
                                  *
                                  * чем больше это значение, тем больше
                                  * параметры уравнеения в тестах,
@@ -37,7 +38,19 @@ const double TEST_RANGE = 1e3;  /**< @brief некоторый разброс д
                                  * @see gen_test
                                  */
 
-const int TESTS_N = (int) 1e6;  ///< кол-во тестов по умолчанию
+const double ROOTS_0_PROB = 1e-2;    /**<
+                                 * @brief вероятность корня 0 в тесте
+                                 *
+                                 * тесты распадаются на случаи,
+                                 * когда корень (сумма корней) 0 и не 0. Это не
+                                 * заслуживает разбиения на отдельные функции,
+                                 * но заслуживает рассмотрения,
+                                 * а вероятность 0 в рандоме КРАЙНЕ МАЛА!1!
+                                 *
+                                 * @see gen_test
+                                 */
+
+const int TESTS_N = (int) 1e7;  ///< кол-во тестов по умолчанию
 
 
 /**
@@ -194,7 +207,8 @@ void process_error(int err_code);
 int main(int argc, char *argv[])
 {
     // FIXME - это временно!!! :
-    printf("tests failed: %d", run_tests(TESTS_N)); //FIXME - точность (решения или теста?)
+    int tf = run_tests(TESTS_N);
+    printf("тестов провалено: %d, доля ошибок: %f", tf, (double) tf / TESTS_N); //FIXME - точность (решения или теста?)
     return 0;
 
     sParams params = {.0, .0, .0};
@@ -381,7 +395,8 @@ void solve_deg2(sParams params, sSolution* solution)
         *solution = {0, .0, .0};
     else if (a>0)
         *solution = {2, (-b - sqrt(D)) / (2 * a), (-b + sqrt(D)) / (2 * a)};
-    else*solution = {2, (-b + sqrt(D)) / (2 * a), (-b - sqrt(D)) / (2 * a)};
+    else
+        *solution = {2, (-b + sqrt(D)) / (2 * a), (-b - sqrt(D)) / (2 * a)};
 
 
 }
@@ -484,7 +499,7 @@ void gen_test_0_roots_deg0(sParams * params, sSolution * solution)
 
 void gen_test_0_roots_deg2(sParams * params, sSolution * solution)
 {
-    double a = random_ab(EPS, TEST_RANGE);
+    double a = random_ab_nz(EPS, TEST_RANGE);
     double b = random_ab(-TEST_RANGE, TEST_RANGE);
 
     double y  = - (b * b) / (4 * a); // y вершины, если  c = 0
@@ -496,7 +511,7 @@ void gen_test_0_roots_deg2(sParams * params, sSolution * solution)
      *  b^2 / 4a - 2b^2 / 4a        =
      *  - b^2 / 4a
      *
-     * "Размерность" - param^1
+     * Порядок дискриминанта - TETS_RANGE^2
      */
 
     double c = random_ab(-y+EPS, y + TEST_RANGE);
@@ -508,47 +523,72 @@ void gen_test_0_roots_deg2(sParams * params, sSolution * solution)
 
 void gen_test_1_root_deg1(sParams * params, sSolution * solution)
 {
-    double x = random_ab_nz(-TEST_RANGE, TEST_RANGE); // точки пересечения прямой с осями
-    double y = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+    if (random_ab(0,1)<ROOTS_0_PROB)
+    {
+        *params  = {.0, random_ab_nz(-TEST_RANGE, TEST_RANGE), .0};
+        *solution = {1, .0, .0};
+        return;
+    }
 
-    *params = {.0, - y / x, y};
+    double x = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+
+    double c = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+
+    *params = {.0, - c / x, c};
     *solution = {1, x, .0};
 }
 
 void gen_test_1_root_deg2(sParams * params, sSolution * solution)
 {
-    double x = random_ab(-TEST_RANGE, TEST_RANGE);
+    if (random_ab(0,1)<ROOTS_0_PROB)
+    {
+        *params  = {random_ab_nz(-TEST_RANGE, TEST_RANGE), 0, .0};
+        *solution = {1, .0, .0};
+        return;
+    }
 
-    double a = random_ab_nz(-TEST_RANGE, TEST_RANGE);
-    double b = -2 * x * a;
-    double c = x * x * a;
+    double x = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+    double b = random_ab(-TEST_RANGE, TEST_RANGE);
 
-    double norm = absmax(a, b, c);
-    a = a / norm * TEST_RANGE;
-    b = b / norm * TEST_RANGE;
-    c = c / norm * TEST_RANGE;
-
-    *params= (sParams){a, b, c};
+    *params= (sParams){-b / (2*x), b, -(b * x)/2};
+    /*  Здесь x - x вершины
+     *
+     *  1.  x = -b / 2a => a = -b / 2x
+     *
+     *  2.  b^2 - 4ac = 0       =>
+     *      c = b^2 / 4a        =
+     *      b^2 / (4 * -b / 2x) =
+     *      -bx / 2
+     *
+     * Порядок дискриминанта - TETS_RANGE^2
+     */
     *solution = {1, x, .0};
 }
 
 void gen_test_2_roots(sParams * params, sSolution * solution)
 {
+    if ((random_ab(0,1) < ROOTS_0_PROB) || 1)
+    {
+        double x1 = random_ab_nz(EPS,TEST_RANGE);
+
+        double c = -random_ab_nz(-TEST_RANGE, TEST_RANGE);
+        double a = -c / (x1 * x1);
+
+        *params = {a, 0, c};
+        *solution = {2, -x1, x1};
+
+    }
+
     double x1 = random_ab(-TEST_RANGE, TEST_RANGE);
     double x2 = random_ab(-TEST_RANGE, TEST_RANGE);
-    while (!cmp_double(x1, x2))
+    while (!cmp_double(x1, x2)  || !cmp_double(x1 + x2, 0))
         x2 = random_ab(-TEST_RANGE, TEST_RANGE);
     if (x1 > x2)
         swap(&x1, &x2);
 
-    double a = random_ab_nz(-TEST_RANGE, TEST_RANGE);
-    double b = (-x1 - x2) * a;
-    double c = x1 * x2 * a;
-
-    /*double norm = absmax(a, b, c);
-    a = a / norm * TEST_RANGE;
-    b = b / norm * TEST_RANGE;
-    c = c / norm * TEST_RANGE;*/
+    double b = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+    double a = -b / (x1+x2);
+    double c = -b * x1 / (x1+x2) * x2;
 
     *params= (sParams){a, b, c};
     *solution = {2, x1, x2};
@@ -568,9 +608,9 @@ int run_test(sParams params, sSolution ref_solution)
     {
         fprintf(stderr,
                 "TEST_FAILED:\n"
-                "\tПараметры: %f\t %f\t %f\n"
-                "\tОжидаемое решение: %d\t %f\t %f\n"
-                "\tОтвет функции:     %d\t %f\t %f\n",
+                "\tПараметры: %.9f\t %.9f\t %.9f\n"
+                "\tОжидаемое решение: %d\t %.9f\t %.9f\n"
+                "\tОтвет функции:     %d\t %.9f\t %.9f\n",
                 params.a, params.b, params.c,
                 ref_solution.rnum, ref_solution.x1, ref_solution.x2,
                 test_solution.rnum, test_solution.x1, test_solution.x2
@@ -621,7 +661,7 @@ void process_error(int err_code)
     }
 }
 
-double random_ab(double a, double b)
+double random_ab(double a, double b) //TODO логарифмический рандом
 {
     assert(cmp_double(a, b) < 0);
     if (!cmp_double(a, b))
@@ -636,14 +676,6 @@ double random_ab_nz(double a, double b)
         res = random_ab(a, b);
     return res;
 };
-
-double absmax(double a, double b, double c) // FIXME - va_list
-{
-    a=fabs(a);
-    b=fabs(b);
-    c=fabs(c);
-    return max(max(a,b), c);
-}// TODO - упорядочить как-то. по алфавиту?
 
 void swap (double * a, double * b)
 {
