@@ -65,6 +65,11 @@ enum errors
     ERR_LACK_CL,    ///< мало аргументов командной строки
 };
 
+struct
+{
+    int RUN_TESTS: 1;
+} FLAGS = {};
+
 const int INFTY = -1;           ///< значение для бесконечности корней
 const double EPS = 1e-6;        ///<  точность double и просто маленькое значение
 
@@ -91,7 +96,7 @@ const double ROOTS_0_PROB = 1e-2;    /**<
                                  * @see gen_test_1_root_deg1, gen_test_2_roots
                                  */
 
-const int TESTS_N = (int) 2e7;  ///< кол-во тестов по умолчанию
+int TESTS_N = (int) 2e7;  ///< кол-во тестов по умолчанию
 
 
 /**
@@ -114,7 +119,7 @@ int cmp_double(double a, double b);
  * -1 если первый различный элемент в них в первой
  * структуре меньше, 1 иначе.
  */
-int cmp_sSolution(sSolution * a, sSolution * b);
+int cmp_sSolution(const sSolution *a, const sSolution *b);
 
 /**
  * @brief случайное число от a до b
@@ -182,7 +187,7 @@ int input(int argc, char *argv[], sParams* params);
  * @param [out] solution    указатель на структуру для записи решения
  * @return Ничего, так как я не придумал чего-либо осмысленного
  */
-void solve_general(sParams *params, sSolution* solution);
+void solve_general(const sParams* params, sSolution *solution);
 
 /**
  * @brief выводит решение
@@ -260,6 +265,7 @@ int input(int argc, char *argv[], sParams* params)
     if (argc > 1)
         return input_cl(argc, argv, params);
 
+
     printf("Введите коэффициэнты - три числа:\n");
 
     if (scanf("%lf %lf %lf", &params->a, &params->b, &params->c) < 3)
@@ -299,9 +305,9 @@ int input_cl(int argc, char *argv[], sParams* params)
  *
  * @param [in, out] solution структура с решением, где надо поправлять
  */
-void fix_zero(sSolution* solution);
+void fix_zero(sSolution *solution);
 
-void output(sSolution* solution)
+void output(sSolution *solution)
 {
     fix_zero(solution);
 
@@ -327,7 +333,7 @@ void output(sSolution* solution)
     }
 }
 
-void fix_zero(sSolution* solution)
+void fix_zero(sSolution *solution)
 {
     assert(solution != NULL);
 
@@ -350,7 +356,7 @@ void fix_zero(sSolution* solution)
  * @param [out] solution    указатель на структуру для записи решения
  * @return Ничего, так как я не придумал чего-либо осмысленного
  */
-void solve_deg2(sParams *params, sSolution* solution);
+void solve_deg2(const sParams* params, sSolution *solution);
 
 /**
  * @brief Решает уравнение bx + c = 0.
@@ -361,7 +367,7 @@ void solve_deg2(sParams *params, sSolution* solution);
  * @param [out] solution    указатель на структуру для записи решения
  * @return Ничего, так как я не придумал чего-либо осмысленного
  */
-void solve_deg1(sParams *params, sSolution* solution);
+void solve_deg1(const sParams* params, sSolution *solution);
 
 /**
  * @brief Решает уравнение c = 0.
@@ -374,10 +380,9 @@ void solve_deg1(sParams *params, sSolution* solution);
  * @param [out] solution    указатель на структуру для записи решения
  * @return Ничего, так как я не придумал чего-либо осмысленного
  */
-void solve_deg0(sParams *params, sSolution* solution);
-//TODO - структуру по ссылке
+void solve_deg0(const sParams* params, sSolution *solution);
 
-void solve_general(sParams *params, sSolution* solution)
+void solve_general(const sParams* params, sSolution *solution)
 {
     if (cmp_double(params->a, 0))
         solve_deg2(params, solution);
@@ -387,7 +392,7 @@ void solve_general(sParams *params, sSolution* solution)
         solve_deg0(params, solution);
 }
 
-void solve_deg2(sParams *params, sSolution* solution)
+void solve_deg2(const sParams* params, sSolution *solution)
 {
     assert(cmp_double(params->a, .0));
 
@@ -408,7 +413,7 @@ void solve_deg2(sParams *params, sSolution* solution)
 
 }
 
-void solve_deg1(sParams *params, sSolution* solution)
+void solve_deg1(const sParams* params, sSolution *solution)
 {
 
     assert(!cmp_double(params->a, .0));
@@ -419,7 +424,7 @@ void solve_deg1(sParams *params, sSolution* solution)
     *solution = {1, -c / b, .0};
 }
 
-void solve_deg0(sParams *params, sSolution* solution)
+void solve_deg0(const sParams* params, sSolution *solution)
 {
     assert(!cmp_double(params->a, .0));
     assert(!cmp_double(params->b, .0));
@@ -439,7 +444,7 @@ void solve_deg0(sParams *params, sSolution* solution)
  * @param [out] params указатель на структуру для записи параметров
  * @param [out] params указатель на структуру для записи ответов
  */
-void gen_test(sParams * params, sSolution * solution);
+void gen_test(sParams* params, sSolution *solution);
 
 /**
  * @brief проверяет правильность работы solve_general
@@ -448,7 +453,7 @@ void gen_test(sParams * params, sSolution * solution);
  * @param ref_solution правильные ответы тестового уравнения
  * @return 0 в случае успеха, 1 в случае провала.
  */
-int run_test(sParams * params, sSolution * ref_solution);
+int run_test(const sParams* params, const sSolution *ref_solution);
 
 int run_tests(int tests_n)
 {
@@ -470,7 +475,7 @@ int run_tests(int tests_n)
  * @param [out] params указатель на структуру для записи параметров
  * @param [out] params указатель на структуру для записи ответов
  */
-void gen_test_0_roots_deg0(sParams * params, sSolution * solution);
+void gen_test_0_roots_deg0(sParams* params, sSolution *solution);
 
 /**
  * @brief тест: случай с 0 корней и a != 0
@@ -478,7 +483,7 @@ void gen_test_0_roots_deg0(sParams * params, sSolution * solution);
  * @param [out] params указатель на структуру для записи параметров
  * @param [out] params указатель на структуру для записи ответов
  */
-void gen_test_0_roots_deg2(sParams * params, sSolution * solution);
+void gen_test_0_roots_deg2(sParams* params, sSolution *solution);
 
 /**
  * @brief тест: случай с 1 корнем и a = 0, b != 0
@@ -486,7 +491,7 @@ void gen_test_0_roots_deg2(sParams * params, sSolution * solution);
  * @param [out] params указатель на структуру для записи параметров
  * @param [out] params указатель на структуру для записи ответов
  */
-void gen_test_1_root_deg1(sParams * params, sSolution * solution);
+void gen_test_1_root_deg1(sParams* params, sSolution *solution);
 
 /**
  * @brief тест: случай с 1 корнем и a != 0
@@ -494,7 +499,7 @@ void gen_test_1_root_deg1(sParams * params, sSolution * solution);
  * @param [out] params указатель на структуру для записи параметров
  * @param [out] params указатель на структуру для записи ответов
  */
-void gen_test_1_root_deg2(sParams * params, sSolution * solution);
+void gen_test_1_root_deg2(sParams* params, sSolution *solution);
 
 /**
  * @brief тест: случай с 2 корнями и a != 0
@@ -505,7 +510,7 @@ void gen_test_1_root_deg2(sParams * params, sSolution * solution);
  * @param [out] params указатель на структуру для записи параметров
  * @param [out] params указатель на структуру для записи ответов
  */
-void gen_test_2_roots(sParams * params, sSolution * solution);
+void gen_test_2_roots(sParams* params, sSolution *solution);
 
 /**
  * @brief тест: случай с бесконечностью корней
@@ -513,9 +518,9 @@ void gen_test_2_roots(sParams * params, sSolution * solution);
  * @param [out] params указатель на структуру для записи параметров
  * @param [out] params указатель на структуру для записи ответов
  */
-void gen_test_INFTY_roots(sParams * params, sSolution * solution);
+void gen_test_INFTY_roots(sParams* params, sSolution *solution);
 
-void gen_test(sParams * params, sSolution * solution)
+void gen_test(sParams* params, sSolution *solution)
 {
     switch (rand() % 6) // не лучший способ, но простой
     {
@@ -549,14 +554,14 @@ void gen_test(sParams * params, sSolution * solution)
     }
 }
 
-void gen_test_0_roots_deg0(sParams * params, sSolution * solution)
+void gen_test_0_roots_deg0(sParams* params, sSolution *solution)
 {
     double c = random_ab_nz(-TEST_RANGE, TEST_RANGE);
     *params = {.0, .0, c};
     *solution = {0, .0, .0};
 }
 
-void gen_test_0_roots_deg2(sParams * params, sSolution * solution)
+void gen_test_0_roots_deg2(sParams* params, sSolution *solution)
 {
     double a = random_ab_nz(EPS, TEST_RANGE);
     double b = random_ab(-TEST_RANGE, TEST_RANGE);
@@ -580,7 +585,7 @@ void gen_test_0_roots_deg2(sParams * params, sSolution * solution)
 
 }
 
-void gen_test_1_root_deg1(sParams * params, sSolution * solution)
+void gen_test_1_root_deg1(sParams* params, sSolution *solution)
 {
     if (random_ab(0,1)<ROOTS_0_PROB)
     {
@@ -597,7 +602,7 @@ void gen_test_1_root_deg1(sParams * params, sSolution * solution)
     *solution = {1, x, .0};
 }
 
-void gen_test_1_root_deg2(sParams * params, sSolution * solution)
+void gen_test_1_root_deg2(sParams* params, sSolution *solution)
 {
     if (random_ab(0,1)<ROOTS_0_PROB)
     {
@@ -624,7 +629,7 @@ void gen_test_1_root_deg2(sParams * params, sSolution * solution)
     *solution = {1, x, .0};
 }
 
-void gen_test_2_roots(sParams * params, sSolution * solution) //FIXME - лол крч в при оч мелких дискриминантах падает
+void gen_test_2_roots(sParams* params, sSolution *solution) //FIXME - лол крч в при оч мелких дискриминантах падает
 {
     if ((random_ab(0,1) < ROOTS_0_PROB))
     {
@@ -653,13 +658,13 @@ void gen_test_2_roots(sParams * params, sSolution * solution) //FIXME - лол �
     *solution = {2, x1, x2};
 }
 
-void gen_test_INFTY_roots(sParams * params, sSolution * solution)
+void gen_test_INFTY_roots(sParams* params, sSolution *solution)
 {
     *params = {.0, .0, .0};
     *solution = {INFTY, .0, .0};
 }
 
-int run_test(sParams* params, sSolution* ref_solution)
+int run_test(const sParams* params, const sSolution *ref_solution)
 {
     sSolution test_solution = {0, .0, .0};
     solve_general(params, &test_solution);
@@ -692,7 +697,7 @@ int cmp_double(double a, double b)
     return (a < b) ? -1 : 1;
 }
 
-int cmp_sSolution(sSolution* a, sSolution* b)
+int cmp_sSolution(const sSolution *a, const sSolution *b)
 {
     if (a->rnum != b->rnum)
         return (a->rnum < b->rnum) ? -1 : 1;
@@ -717,7 +722,7 @@ void process_error(int err_code)
         printf("Недостаточно аргументов командной строки.\n");
         break;
     default:
-        fprintf(stderr, "\nERROR: process_error(%d): unknown error %d.\n", err_code, err_code);
+        fprintf(stderr, "\nERROR: process_error(): unknown error %d.\n", err_code);
         break;
     }
 }
