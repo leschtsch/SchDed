@@ -5,7 +5,7 @@
  * Требуется написать программу, решающую квадратное уравнение,
  * А потом на нее вешается куча всего. O`_o
  *
- * @see solve_general, main.cpp
+ * @see solve_general, run_tests, main.cpp
  */
 
 /**
@@ -13,7 +13,6 @@
  * @brief первый и единственный файл
  */
 
-// TODO - тесты
 // TODO - флаг для тестов
 // TODO - readme
 
@@ -25,33 +24,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-const int INFTY = -1;           ///< значение для бесконечности корней
-const double EPS = 1e-6;        ///<  точность double и просто маленькое значение
-
-const double TEST_RANGE = 1e3;  /**<
-                                 * @brief некоторый разброс для теста
-                                 *
-                                 * чем больше это значение, тем больше
-                                 * параметры уравнеения в тестах,
-                                 * но конкретных ограничений нет
-                                 * @see gen_test
-                                 */
-
-const double ROOTS_0_PROB = 1e-2;    /**<
-                                 * @brief вероятность корня 0 в тесте
-                                 *
-                                 * тесты распадаются на случаи,
-                                 * когда корень (сумма корней) 0 и не 0. Это не
-                                 * заслуживает разбиения на отдельные функции,
-                                 * но заслуживает рассмотрения,
-                                 * а вероятность 0 в рандоме КРАЙНЕ МАЛА!1!
-                                 *
-                                 * @see gen_test
-                                 */
-
-const int TESTS_N = (int) 1e7;  ///< кол-во тестов по умолчанию
-
 
 /**
  * @brief структура для записи решения
@@ -92,6 +64,35 @@ enum errors
     ERR_BAD_CL,     ///< агрумент командной строки не число
     ERR_LACK_CL,    ///< мало аргументов командной строки
 };
+
+const int INFTY = -1;           ///< значение для бесконечности корней
+const double EPS = 1e-6;        ///<  точность double и просто маленькое значение
+
+const double TEST_RANGE = 1e3;  /**<
+                                 * @brief некоторый разброс для теста
+                                 *
+                                 * чем больше это значение, тем больше
+                                 * корни в тестах, но конкретных
+                                 * ограничений нет. Расброс корней и
+                                 * TEST_RANGE зависят линейно
+                                 * @see gen_test и ее зависимые
+                                 */
+
+const double ROOTS_0_PROB = 1e-2;    /**<
+                                 * @brief вероятность особог случая в тесте
+                                 *
+                                 * тесты распадаются на случаи,
+                                 * когда корень (сумма корней) 0 и не 0. Это не
+                                 * заслуживает разбиения на отдельные функции,
+                                 * но заслуживает рассмотрения,
+                                 * а вероятность 0 в рандоме КРАЙНЕ МАЛА!1!
+                                 *
+                                 * @see gen_test_0_roots_deg2, gen_test_1_root_deg2,
+                                 * @see gen_test_1_root_deg1, gen_test_2_roots
+                                 */
+
+const int TESTS_N = (int) 2e7;  ///< кол-во тестов по умолчанию
+
 
 /**
  * @brief сравнивает два double
@@ -137,14 +138,20 @@ double random_ab(double a, double b);
  */
 double random_ab_nz(double a, double b);
 
-double absmax(double a, double b, double c);
-
-void swap (double * a, double * b);
+void swap (double * a, double * b); ///<swap, т. к. встроенный, поже,  в std::
 
 //-----------------------------------------------------^-общее-^-------------------------------------------------------
 
 //---------------------------------------------v-main и вызываемое ею-v------------------------------------------------
 
+/**
+ * @brief запускает случайные тесты
+ *
+ * @param [in] tests_n кол-во тестов
+ * @return кол-во проваленных тестов
+ *
+ * @see TESTS_N
+ */
 int run_tests(int tests_n);
 
 /**
@@ -175,7 +182,7 @@ int input(int argc, char *argv[], sParams* params);
  * @param [out] solution    указатель на структуру для записи решения
  * @return Ничего, так как я не придумал чего-либо осмысленного
  */
-void solve_general(sParams params, sSolution* solution);
+void solve_general(sParams *params, sSolution* solution);
 
 /**
  * @brief выводит решение
@@ -187,7 +194,7 @@ void solve_general(sParams params, sSolution* solution);
  *
  * @param [in, out] solution - решение, которое надо вывести
  */
-void output(sSolution solution);
+void output(sSolution *solution);
 
 /**
  * @brief обработка ошибок
@@ -208,8 +215,9 @@ int main(int argc, char *argv[])
 {
     // FIXME - это временно!!! :
     int tf = run_tests(TESTS_N);
-    printf("тестов провалено: %d, доля ошибок: %f", tf, (double) tf / TESTS_N); //FIXME - точность (решения или теста?)
+    printf("тестов провалено: %d, доля ошибок: %f", tf, (double) tf / TESTS_N);
     return 0;
+
 
     sParams params = {.0, .0, .0};
     int input_res = input(argc, argv, &params);
@@ -220,8 +228,8 @@ int main(int argc, char *argv[])
     }
 
     sSolution solution = {0, .0, .0};
-    solve_general(params, &solution);
-    output(solution);
+    solve_general(&params, &solution);
+    output(&solution);
 
     return 0;
 }
@@ -291,36 +299,35 @@ int input_cl(int argc, char *argv[], sParams* params)
  *
  * @param [in, out] solution структура с решением, где надо поправлять
  */
-void fix_zero(sSolution *solution);
+void fix_zero(sSolution* solution);
 
-void output(sSolution solution)
+void output(sSolution* solution)
 {
-    fix_zero(&solution);
+    fix_zero(solution);
 
     printf("У уравнения ");
 
-    switch (solution.rnum)
+    switch (solution->rnum)
     {
     case 0:
         printf("нет корней.\n");
         break;
     case 1:
-        printf("1 корень: %f.\n", solution.x1);
+        printf("1 корень: %f.\n", solution->x1);
         break;
     case 2:
-        printf("2 корня: %f, %f.\n", solution.x1, solution.x2);
+        printf("2 корня: %f, %f.\n", solution->x1, solution->x2);
         break;
     case INFTY:
         printf("бесконечно много корней.\n");
         break;
     default:
-        fprintf(stderr, "\nERROR: output(): solution.rnum == %d\n", solution.rnum);
-        fprintf(stderr, "\nERROR: output(): solution.rnum == %d\n", solution.rnum);
+        fprintf(stderr, "\nERROR: output(): solution.rnum == %d\n", solution->rnum);
         break;
     }
 }
 
-void fix_zero(sSolution *solution)
+void fix_zero(sSolution* solution)
 {
     assert(solution != NULL);
 
@@ -343,7 +350,7 @@ void fix_zero(sSolution *solution)
  * @param [out] solution    указатель на структуру для записи решения
  * @return Ничего, так как я не придумал чего-либо осмысленного
  */
-void solve_deg2(sParams params, sSolution* solution);
+void solve_deg2(sParams *params, sSolution* solution);
 
 /**
  * @brief Решает уравнение bx + c = 0.
@@ -354,7 +361,7 @@ void solve_deg2(sParams params, sSolution* solution);
  * @param [out] solution    указатель на структуру для записи решения
  * @return Ничего, так как я не придумал чего-либо осмысленного
  */
-void solve_deg1(sParams params, sSolution* solution);
+void solve_deg1(sParams *params, sSolution* solution);
 
 /**
  * @brief Решает уравнение c = 0.
@@ -367,26 +374,26 @@ void solve_deg1(sParams params, sSolution* solution);
  * @param [out] solution    указатель на структуру для записи решения
  * @return Ничего, так как я не придумал чего-либо осмысленного
  */
-void solve_deg0(sParams params, sSolution* solution);
+void solve_deg0(sParams *params, sSolution* solution);
 //TODO - структуру по ссылке
 
-void solve_general(sParams params, sSolution* solution)
+void solve_general(sParams *params, sSolution* solution)
 {
-    if (cmp_double(params.a, 0))
+    if (cmp_double(params->a, 0))
         solve_deg2(params, solution);
-    else if (cmp_double(params.b, 0))
+    else if (cmp_double(params->b, 0))
         solve_deg1(params, solution);
     else
         solve_deg0(params, solution);
 }
 
-void solve_deg2(sParams params, sSolution* solution)
+void solve_deg2(sParams *params, sSolution* solution)
 {
-    assert(cmp_double(params.a, .0));
+    assert(cmp_double(params->a, .0));
 
-    double a = params.a;
-    double b = params.b;
-    double c = params.c;
+    double a = params->a;
+    double b = params->b;
+    double c = params->c;
     double D = b * b - 4 * a * c;
 
     if (!cmp_double(D, .0))
@@ -401,29 +408,37 @@ void solve_deg2(sParams params, sSolution* solution)
 
 }
 
-void solve_deg1(sParams params, sSolution* solution)
+void solve_deg1(sParams *params, sSolution* solution)
 {
 
-    assert(!cmp_double(params.a, .0));
-    assert(cmp_double(params.b, .0));
+    assert(!cmp_double(params->a, .0));
+    assert(cmp_double(params->b, .0));
 
-    double b = params.b;
-    double c = params.c;
+    double b = params->b;
+    double c = params->c;
     *solution = {1, -c / b, .0};
 }
 
-void solve_deg0(sParams params, sSolution* solution)
+void solve_deg0(sParams *params, sSolution* solution)
 {
-    assert(!cmp_double(params.a, .0));
-    assert(!cmp_double(params.b, .0));
+    assert(!cmp_double(params->a, .0));
+    assert(!cmp_double(params->b, .0));
 
-    *solution =  (cmp_double(params.c, .0)) ? (sSolution){0, .0, .0} : (sSolution){INFTY, .0, .0};
+    *solution =  (cmp_double(params->c, .0)) ? (sSolution){0, .0, .0} : (sSolution){INFTY, .0, .0};
 }
 
 //-----------------------------------------------^-решение уравнения-^-------------------------------------------------
 
 //-----------------------------------------------------v-тесты-v-------------------------------------------------------
 
+/**
+ * @brief генерирут тестовый случай
+ *
+ * выбирает один из вариантов
+ *
+ * @param [out] params указатель на структуру для записи параметров
+ * @param [out] params указатель на структуру для записи ответов
+ */
 void gen_test(sParams * params, sSolution * solution);
 
 /**
@@ -433,7 +448,7 @@ void gen_test(sParams * params, sSolution * solution);
  * @param ref_solution правильные ответы тестового уравнения
  * @return 0 в случае успеха, 1 в случае провала.
  */
-int run_test(sParams params, sSolution ref_solution);
+int run_test(sParams * params, sSolution * ref_solution);
 
 int run_tests(int tests_n)
 {
@@ -443,17 +458,61 @@ int run_tests(int tests_n)
         sParams params = {.0, .0, .0};
         sSolution ref_solution = {0, .0, .0};
         gen_test(&params, &ref_solution);
-        if (run_test(params, ref_solution))
+        if (run_test(&params, &ref_solution))
             tests_failed++;
     }
     return tests_failed;
-} // TODO - доделать, док
+}
 
+/**
+ * @brief тест: случай с 0 корней и a = b = 0
+ *
+ * @param [out] params указатель на структуру для записи параметров
+ * @param [out] params указатель на структуру для записи ответов
+ */
 void gen_test_0_roots_deg0(sParams * params, sSolution * solution);
+
+/**
+ * @brief тест: случай с 0 корней и a != 0
+ *
+ * @param [out] params указатель на структуру для записи параметров
+ * @param [out] params указатель на структуру для записи ответов
+ */
 void gen_test_0_roots_deg2(sParams * params, sSolution * solution);
+
+/**
+ * @brief тест: случай с 1 корнем и a = 0, b != 0
+ *
+ * @param [out] params указатель на структуру для записи параметров
+ * @param [out] params указатель на структуру для записи ответов
+ */
 void gen_test_1_root_deg1(sParams * params, sSolution * solution);
+
+/**
+ * @brief тест: случай с 1 корнем и a != 0
+ *
+ * @param [out] params указатель на структуру для записи параметров
+ * @param [out] params указатель на структуру для записи ответов
+ */
 void gen_test_1_root_deg2(sParams * params, sSolution * solution);
+
+/**
+ * @brief тест: случай с 2 корнями и a != 0
+ *
+ * @note иногда генерит тесты с близкими корнями и
+ * маленькими дискриминантами, и тест падет из-за точности
+ *
+ * @param [out] params указатель на структуру для записи параметров
+ * @param [out] params указатель на структуру для записи ответов
+ */
 void gen_test_2_roots(sParams * params, sSolution * solution);
+
+/**
+ * @brief тест: случай с бесконечностью корней
+ *
+ * @param [out] params указатель на структуру для записи параметров
+ * @param [out] params указатель на структуру для записи ответов
+ */
 void gen_test_INFTY_roots(sParams * params, sSolution * solution);
 
 void gen_test(sParams * params, sSolution * solution)
@@ -485,10 +544,10 @@ void gen_test(sParams * params, sSolution * solution)
         break;
 
     default:
-        fprintf(stderr,"\nERRROR: gen_test(): лол как? БК\n"); //TODO - надпись получше
+        fprintf(stderr,"\nERRROR: gen_test(): unknown test type\n");
         break;
     }
-} //TODO - доделать
+}
 
 void gen_test_0_roots_deg0(sParams * params, sSolution * solution)
 {
@@ -565,9 +624,9 @@ void gen_test_1_root_deg2(sParams * params, sSolution * solution)
     *solution = {1, x, .0};
 }
 
-void gen_test_2_roots(sParams * params, sSolution * solution)
+void gen_test_2_roots(sParams * params, sSolution * solution) //FIXME - лол крч в при оч мелких дискриминантах падает
 {
-    if ((random_ab(0,1) < ROOTS_0_PROB) || 1)
+    if ((random_ab(0,1) < ROOTS_0_PROB))
     {
         double x1 = random_ab_nz(EPS,TEST_RANGE);
 
@@ -600,25 +659,27 @@ void gen_test_INFTY_roots(sParams * params, sSolution * solution)
     *solution = {INFTY, .0, .0};
 }
 
-int run_test(sParams params, sSolution ref_solution)
+int run_test(sParams* params, sSolution* ref_solution)
 {
     sSolution test_solution = {0, .0, .0};
     solve_general(params, &test_solution);
-    if (cmp_sSolution(&ref_solution, &test_solution))
+    if (cmp_sSolution(ref_solution, &test_solution))
     {
         fprintf(stderr,
                 "TEST_FAILED:\n"
                 "\tПараметры: %.9f\t %.9f\t %.9f\n"
+                "\tДискриминант: %.9f\n"
                 "\tОжидаемое решение: %d\t %.9f\t %.9f\n"
                 "\tОтвет функции:     %d\t %.9f\t %.9f\n",
-                params.a, params.b, params.c,
-                ref_solution.rnum, ref_solution.x1, ref_solution.x2,
+                params->a, params->b, params->c,
+                params->b * params->b - 4 * params->a * params->c,
+                ref_solution->rnum, ref_solution->x1, ref_solution->x2,
                 test_solution.rnum, test_solution.x1, test_solution.x2
                 );
         return 1;
     } else
         return 0;
-} // TODO - док
+}
 
 //-----------------------------------------------------^-тесты-^-------------------------------------------------------
 
@@ -661,7 +722,7 @@ void process_error(int err_code)
     }
 }
 
-double random_ab(double a, double b) //TODO логарифмический рандом
+double random_ab(double a, double b)
 {
     assert(cmp_double(a, b) < 0);
     if (!cmp_double(a, b))
