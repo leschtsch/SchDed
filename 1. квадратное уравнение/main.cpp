@@ -59,16 +59,21 @@ typedef struct
  */
 enum errors
 {
-    OK,             ///< ошибки нет
-    ERR_BAD_INPUT,  ///< ошибка ввода, см полное описание
-    ERR_BAD_CL,     ///< агрумент командной строки не число
-    ERR_LACK_CL,    ///< мало аргументов командной строки
+    OK,                 ///< ошибки нет
+    ERR_BAD_INPUT,      ///< ошибка ввода, см полное описание
+    ERR_BAD_CL_ARG,     ///< неизвестный агрумент командной строки
+    ERR_LACK_CL_NUM,    ///< мало чисел в командной строке
+    ERR_MANY_CL_NUM,    ///< слишком много в командной строке
 };
 
+/**
+ * @brief глобальные флаги
+ */
 struct
 {
-    int RUN_TESTS: 1;
-} FLAGS = {};
+    unsigned char RUN_TESTS: 1;      ///< Запускать ли тесты
+    unsigned char SOLVE_EQUATION: 1; ///< решать ли уравнение
+} FLAGS = {0, 1};
 
 const int INFTY = -1;           ///< значение для бесконечности корней
 const double EPS = 1e-6;        ///<  точность double и просто маленькое значение
@@ -96,7 +101,7 @@ const double ROOTS_0_PROB = 1e-2;    /**<
                                  * @see gen_test_1_root_deg1, gen_test_2_roots
                                  */
 
-int TESTS_N = (int) 2e7;  ///< кол-во тестов по умолчанию
+int TESTS_N = (int) 2e1;  ///< кол-во тестов по умолчанию
 
 
 /**
@@ -160,13 +165,10 @@ void swap (double * a, double * b); ///<swap, т. к. встроенный, по
 int run_tests(int tests_n);
 
 /**
- * @brief Считывает параметры уравнения
+ * @brief Считывает параметры уравнения и флаги
  * @note Выводит приглашение на ввод
  *
- * Разрешено вводить три числа либо из консоли,
- * либо в аргументах командной строки.
- * Никаких флагов, фишек и сложных форматов
- * нет - не захотел усложнять.
+ * Про флаги смотри proccess_arg
  *
  * @param [in]  argc    кол-во аргументов командной строки
  * @param [in]  argv    аргументы командной строки
@@ -174,7 +176,7 @@ int run_tests(int tests_n);
  *                       нужно запсать считанные параметры
  * @return код возврата
  *
- * @see errors
+ * @see errors, process_arg
  */
 int input(int argc, char *argv[], sParams* params);
 
@@ -218,18 +220,20 @@ void process_error(int err_code);
  */
 int main(int argc, char *argv[])
 {
-    // FIXME - это временно!!! :
-    int tf = run_tests(TESTS_N);
-    printf("тестов провалено: %d, доля ошибок: %f", tf, (double) tf / TESTS_N);
-    return 0;
-
-
     sParams params = {.0, .0, .0};
     int input_res = input(argc, argv, &params);
+
     if (input_res)
     {
         process_error(input_res);
         return -1;
+    }
+
+    if (FLAGS.RUN_TESTS)
+    {
+        int tf = run_tests(TESTS_N);
+        printf("тестов провалено: %d / %d, доля ошибок: %f\n", tf, TESTS_N, (double) tf / TESTS_N);
+        return tf;
     }
 
     sSolution solution = {0, .0, .0};
@@ -246,8 +250,6 @@ int main(int argc, char *argv[])
 /**
  * @brief считывает аргументы командной строки
  *
- * Разрешено вводить только три числа. Никаких флагов!
- *
  * @param [in]  argc    кол-во аргументов командной строки
  * @param [in]  argv    аргументы командной строки
  * @param [out] params  указатель на структуру, в которую
@@ -262,36 +264,95 @@ int input(int argc, char *argv[], sParams* params)
 {
     assert(params!=NULL);
 
+    int inp_cl_res = ERR_LACK_CL_NUM;
     if (argc > 1)
-        return input_cl(argc, argv, params);
+        inp_cl_res = input_cl(argc, argv, params);
 
+    if (inp_cl_res != ERR_LACK_CL_NUM)
+        return inp_cl_res;
+    if (!FLAGS.SOLVE_EQUATION)
+        return 0;
 
+    process_error(inp_cl_res);
     printf("Введите коэффициэнты - три числа:\n");
+
+    fflush(stdout);
 
     if (scanf("%lf %lf %lf", &params->a, &params->b, &params->c) < 3)
         return ERR_BAD_INPUT;
 
     return OK;
 }
+/**
+ * @brief обработчик нечисловых флагов
+ *
+ * @par Разрешенные флаги:
+ *      @b -t[num] запускает num тестов. По умолчанию 20. Отключает решение уравнения.
+
+ *
+ * @param arg флаг для обработки
+ * @return код возврата
+ *
+ * @see errors
+ */
+int process_arg(const char * arg);
 
 int input_cl(int argc, char *argv[], sParams* params)
 {
     assert(params!=NULL);
 
-    if (argc < 4)
-        return ERR_LACK_CL;
+    double numbers[3]={0, 0, 0};
+    int ni = 0;
 
     char * p = NULL;
 
-    params->a = strtod(argv[1],&p);
-    if (*p != '\0' || p==argv[1])
-        return ERR_BAD_CL;
-    params->b = strtod(argv[2],&p);
-    if (*p != '\0' || p==argv[2])
-        return ERR_BAD_CL;
-    params->c = strtod(argv[3],&p);
-    if (*p != '\0' || p==argv[3])
-        return ERR_BAD_CL;
+    double tmp_num = 0;
+    int processing_res = 0;
+
+    for (int i = 1;  i < argc; i++)
+    {
+        processing_res = 0;
+
+        if (argv[i][0] == '\0')
+            continue;
+
+        tmp_num = strtod(argv[i],&p);
+        if (*p == '\0' && ni >= 3)
+            return ERR_MANY_CL_NUM;
+        else if (*p == '\0' && ni < 3)
+            numbers[ni++] = tmp_num;
+        else
+        {
+            processing_res = process_arg(argv[i]);
+        }
+
+        if (processing_res)
+            return processing_res;
+    }
+
+    if (ni<3)
+        return ERR_LACK_CL_NUM;
+
+    params->a = numbers[0];
+    params->b = numbers[1];
+    params->c = numbers[2];
+
+    return OK;
+}
+
+int process_arg(const char * arg)
+{
+    if (arg[0] != '-' || arg[1] != 't')
+        return ERR_BAD_CL_ARG;
+
+    FLAGS.RUN_TESTS = 1;
+    FLAGS.SOLVE_EQUATION = 0;
+    arg+=2;
+
+    char *p = NULL;
+    int tmp = strtol(arg, &p, 10);
+    if (*p == '\0' && p != arg && tmp > 0)
+        TESTS_N = tmp;
 
     return OK;
 }
@@ -457,6 +518,8 @@ int run_test(const sParams* params, const sSolution *ref_solution);
 
 int run_tests(int tests_n)
 {
+    assert(tests_n > 0);
+
     int tests_failed = 0;
     for(;tests_n;tests_n--)
     {
@@ -715,11 +778,14 @@ void process_error(int err_code)
     case ERR_BAD_INPUT:
         printf("Аргументы введены неверно / ошибка ввода.\n");
         break;
-    case ERR_BAD_CL:
-        printf("Аргументы командной строки введены неверно.\n");
+    case ERR_BAD_CL_ARG:
+        printf("Неизвестный аргумент командной строки.\n");
         break;
-    case ERR_LACK_CL:
-        printf("Недостаточно аргументов командной строки.\n");
+    case ERR_LACK_CL_NUM:
+        printf("Недостаточно чисел в командной строке.\n");
+        break;
+    case ERR_MANY_CL_NUM:
+        printf("Слишком много чисел в командной строке.\n");
         break;
     default:
         fprintf(stderr, "\nERROR: process_error(): unknown error %d.\n", err_code);
