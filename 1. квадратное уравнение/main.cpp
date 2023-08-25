@@ -5,7 +5,7 @@
  * Требуется написать программу, решающую квадратное уравнение,
  * А потом на нее вешается куча всего. O`_o
  *
- * @see solve_general, run_tests, main.cpp
+ * @see process_flag, solve_general, run_tests, main.cpp
  */
 
 /**
@@ -13,7 +13,6 @@
  * @brief первый и единственный файл
  */
 
-// TODO (#2 #): доки файлов
 // TODO (#4#): readme
 
 #include "TXLib.h"
@@ -37,8 +36,8 @@ sFlags FLAGS = {0, 1};
  */
 int main(int argc, char *argv[])
 {
-    sParams params = {.0, .0, .0};
-    int input_res = input(argc, argv, &params);
+    //int input_res = input(argc, argv, &params);
+    int input_res = find_flags(argc, argv);
 
     if (input_res)
     {
@@ -46,12 +45,25 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    if (FLAGS.RUN_TESTS)
-        return run_tests(TESTS_N);
+    if (FLAGS.RUN_TESTS && run_tests(TESTS_N))
+        return -1;
 
-    sSolution solution = {0, .0, .0};
-    solve_general(&params, &solution);
-    output(&solution);
+    if (FLAGS.SOLVE_EQUATION)
+    {
+        sParams params = {.0, .0, .0};
+
+        input_res = input(argc, argv, &params);
+        if (input_res)
+        {
+            process_error(input_res);
+            return -1;
+        }
+
+        sSolution solution = {0, .0, .0};
+        solve_general(&params, &solution);
+
+        output(&solution);
+    }
 
     return 0;
 }

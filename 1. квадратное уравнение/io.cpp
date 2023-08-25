@@ -7,18 +7,39 @@
 
 #include "common.h"
 
+int find_flags(int argc, char *argv[])
+{
+    char * p = NULL;
+    int process_res = 0;
+
+    for (int i = 1; i < argc; i++)
+    {
+        if (argv[i][0] == '\0')
+            continue;
+
+        strtod(argv[i],&p);
+        if (*p == '\0')
+            continue;
+
+        process_res = process_flag(argv[i]);
+        if (process_res)
+            return process_res;
+    }
+
+    return 0;
+}
+
 int input(int argc, char *argv[], sParams* params)
 {
     assert(params!=NULL);
 
     int inp_cl_res = ERR_CLI_TOO_FEW_NUM;
+
     if (argc > 1)
         inp_cl_res = input_cl(argc, argv, params);
 
     if (inp_cl_res != ERR_CLI_TOO_FEW_NUM)
         return inp_cl_res;
-    if (!FLAGS.SOLVE_EQUATION)
-        return 0;
 
     process_error(inp_cl_res);
     printf("Введите коэффициэнты - три числа:\n");
@@ -41,27 +62,20 @@ int input_cl(int argc, char *argv[], sParams* params)
     char * p = NULL;
 
     double tmp_num = 0;
-    int processing_res = 0;
 
     for (int i = 1;  i < argc; i++)
     {
-        processing_res = 0;
 
         if (argv[i][0] == '\0')
             continue;
 
-        tmp_num = strtod(argv[i],&p); // TODO (#2#): sscanf? Переделать?
+        tmp_num = strtod(argv[i],&p); // TODO (#2#): sscanf?
+
         if (*p == '\0' && ni >= 3)
             return ERR_CLI_TOO_MANY_NUM;
         else if (*p == '\0' && ni < 3)
             numbers[ni++] = tmp_num;
-        else
-        {
-            processing_res = process_arg(argv[i]);
-        }
 
-        if (processing_res)
-            return processing_res;
     }
 
     if (ni < 3)
@@ -74,21 +88,29 @@ int input_cl(int argc, char *argv[], sParams* params)
     return OK;
 }
 
-int process_arg(const char * arg)
+int process_flag(const char * arg)
 {
-    if (arg[0] != '-' || arg[1] != 't')
-        return ERR_CLI_BAD_ARG;
+int tmp_num = 0;
 
-    FLAGS.RUN_TESTS = 1;
-    FLAGS.SOLVE_EQUATION = 0;
-    arg += 2;
+    if (arg[0] == '-' && arg[1] == 't')
+    {
+        FLAGS.RUN_TESTS = 1;
+        FLAGS.SOLVE_EQUATION = 0;
+        arg += 2;
 
-    char *p = NULL;
-    int tmp = strtol(arg, &p, 10);
-    if (*p == '\0' && p != arg && tmp > 0)
-        TESTS_N = tmp;
+        char *p = NULL;
+        tmp_num = strtol(arg, &p, 10);
+        if (*p == '\0' && p != arg && tmp_num > 0)
+            TESTS_N = tmp_num;
 
-    return OK;
+        return OK;
+    }
+    else if (arg[0] == '-' && arg[1] == 's')
+    {
+        FLAGS.SOLVE_EQUATION = 1;
+        return OK;
+    }
+    return ERR_CLI_BAD_ARG;
 }
 
 void output(sSolution *solution)

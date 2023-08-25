@@ -1,22 +1,42 @@
+/**
+ * @file io.h
+ * @brief функци ввода-вывода
+ */
+
 #ifndef IO_H
 #define IO_H
 
 #include "common.h"
 
 /**
- * @brief обработчик нечисловых флагов
+ * @brief обработчик флага
  *
  * @par Разрешенные флаги:
- *      @b -t[num] запускает num тестов. По умолчанию 20. Отключает решение уравнения.
-
+ *      @b -t[num] запускает num тестов. Если num отсутствует,
+ *                 неразборчив или <= 0, запускается кол-во тестов
+ *                 по умолчанию. Отключает решение уравнения. \n
+ *      @b -s Включает решение уранения. Должен идти после отключения.
+ *
  *
  * @param arg флаг для обработки
  * @return код возврата
  *
- * @see errors
+ * @see errors, sFlags
  */
-int process_arg(const char * arg);
+int process_flag(const char * arg);
 
+/**
+ * @brief поиск флагов командной строки
+ *
+ * Вызывается в начале main
+ *
+ * @note Разрешенные флаги описаны в process_flag
+ *
+ * @return код возврата
+ *
+ * @see errors, sFlags, process_flag
+ */
+int find_flags(int argc, char *argv[]);
 
 /**
  * @brief считывает аргументы командной строки
@@ -31,7 +51,6 @@ int process_arg(const char * arg);
  */
 int input_cl(int argc, char *argv[], sParams* params);
 
-
 /**
  * @brief Считывает параметры уравнения и флаги
  * @note Выводит приглашение на ввод
@@ -44,7 +63,7 @@ int input_cl(int argc, char *argv[], sParams* params);
  *                       нужно запсать считанные параметры
  * @return код возврата
  *
- * @see errors, process_arg
+ * @see errors, process_flag
  */
 int input(int argc, char *argv[], sParams* params);
 

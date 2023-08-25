@@ -1,3 +1,8 @@
+/**
+ * @file common.h
+ * @brief общие функции
+ */
+
 #ifndef COMMON_H
 #define COMMON_H
 
@@ -33,7 +38,7 @@ typedef struct
  * это слишком сложно чрез один лишь scanf.
  * Не захотел ради этого усложнять код.
  */
-enum errors// TODO (#2#): расшифровать CLI, TO_FEW
+enum errors
 {
     OK,                 ///< ошибки нет
     ERR_BAD_INPUT,      ///< ошибка ввода, см полное описание

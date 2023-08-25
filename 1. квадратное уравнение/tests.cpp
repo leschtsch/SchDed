@@ -140,6 +140,7 @@ void gen_test_2_roots(sParams* params, sSolution *solution)
     double x1 = random_ab(-TEST_RANGE, TEST_RANGE);
     double x2 = random_ab(-TEST_RANGE, TEST_RANGE);
     while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0)) //FIXME (#4#): без циклов
+                                                            // Взять типа 100 EPS?
         x2 = random_ab(-TEST_RANGE, TEST_RANGE);
     if (x1 > x2)
         my_swap(&x1, &x2);

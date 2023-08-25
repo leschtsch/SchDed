@@ -1,3 +1,8 @@
+/**
+ * @file solve.h
+ * @brief функци, решающие уравнения
+ */
+
 #ifndef SOLVE_H
 #define SOLVE_H
 

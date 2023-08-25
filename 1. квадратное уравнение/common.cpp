@@ -40,13 +40,14 @@ double random_ab_nz(double a, double b)
     if(a > 0 || b < 0)
         return random_ab(a, b);
 
-    /*if (random_ab(0,1) < (0 - a) / (b - a))
+
+    if (random_ab(0,1) < (0 - a) / (b - a))
         return random_ab(a, -EPS);
     else
-        return random_ab(EPS, b);*/
+        return random_ab(EPS, b); // какого-то выдает на грани точности
 
     double res = random_ab(a, b);
-    return (cmp_double(res, 0)) ? res - EPS : res;
+    return (cmp_double(res, 0)) ? res - EPS : res; // ну будет слегка кринж с распределением, ок
 };
 
 void my_swap (double * a, double * b)
@@ -70,8 +71,10 @@ void process_error(int err_code)
 
     case ERR_CLI_BAD_ARG:
         printf("Неизвестный аргумент (флаг) командной строки. Известные флаги:\n"
-               "\t-t[num] запускает num тестов. Если num отсутствует, неразборчив "
+               "\t-t[num] Запускает num тестов. Если num отсутствует, неразборчив "
                "или <= 0, запускается кол-во тестов по умолчанию."
+               "Отключает решение уравнения.\n"
+               "\t-s Включает решение уранения. Должен идти после отключения.\n"
         );
         break;
 

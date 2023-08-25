@@ -1,3 +1,8 @@
+/**
+ * @file tests.h
+ * @brief функци тестов
+ */
+
 #ifndef TESTS_H
 #define TESTS_H
 
@@ -67,14 +72,18 @@ void gen_test_1_root_deg2(sParams* params, sSolution *solution);
 /**
  * @brief тест: случай с 2 корнями и a != 0
  *
- * @note иногда генерит тесты с близкими корнями и
- * маленькими дискриминантами, и тест падет из-за точности
- *
  * @param [out] params указатель на структуру для записи параметров
  * @param [out] params указатель на структуру для записи ответов
  */
 void gen_test_2_roots(sParams* params, sSolution *solution);
 
+
+/**
+ * @brief тест: случаи с 2 корнями и a != 0, которые решается без дискриминанта
+ *
+ * @param [out] params указатель на структуру для записи параметров
+ * @param [out] params указатель на структуру для записи ответов
+ */
 void gen_test_deg2_no_D(sParams* params, sSolution *solution);
 
 /**
