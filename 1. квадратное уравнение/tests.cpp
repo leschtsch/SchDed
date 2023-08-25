@@ -39,7 +39,8 @@ void gen_test(sParams* params, sSolution *solution)
                         *gen_test_1_root_deg1,
                         *gen_test_1_root_deg2,
                         *gen_test_2_roots,
-                        *gen_test_INFTY_roots
+                        *gen_test_deg2_no_D,
+                        *gen_test_INFTY_roots,
                         };
 
     int cases_n = sizeof test_cases / sizeof test_cases[0];
@@ -71,7 +72,7 @@ void gen_test_0_roots_deg2(sParams* params, sSolution *solution)
      * Порядок дискриминанта - TETS_RANGE^2
      */
 
-    double c = -y + sign * random_ab(EPS, TEST_RANGE);
+    double c = -y + sign * random_ab_nz(0, TEST_RANGE);
 
     *params = (sParams){a, b, c};
     *solution = {0, .0, .0};
@@ -122,7 +123,7 @@ void gen_test_1_root_deg2(sParams* params, sSolution *solution)
     *solution = {1, x, .0};
 }
 
-void gen_test_2_roots(sParams* params, sSolution *solution) //FIXME - лол крч в при оч мелких дискриминантах падает
+void gen_test_2_roots(sParams* params, sSolution *solution)
 {
     if ((random_ab(0,1) < ROOTS_0_PROB))
     {
@@ -138,14 +139,16 @@ void gen_test_2_roots(sParams* params, sSolution *solution) //FIXME - лол к�
 
     double x1 = random_ab(-TEST_RANGE, TEST_RANGE);
     double x2 = random_ab(-TEST_RANGE, TEST_RANGE);
-    while (!cmp_double(x1, x2)  || !cmp_double(x1 + x2, 0))
+    while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0)) //FIXME (#4#): без циклов
         x2 = random_ab(-TEST_RANGE, TEST_RANGE);
     if (x1 > x2)
         my_swap(&x1, &x2);
-
-    double b = random_ab_nz(-TEST_RANGE, TEST_RANGE);
-    double a = -b / (x1+x2);
-    double c = -b * x1 / (x1+x2) * x2;
+    double a = .0, b = .0, c = .0;
+    do {
+        b = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+        a = -b / (x1+x2);
+        c = -b * x1 / (x1+x2) * x2;
+    } while (cmp_double(b * b - 4 * a * c, 0));
     /*
      * 1.   x1 + x2 = -b / a         =>
      *      a = -b / (x1 + x2)
@@ -161,6 +164,62 @@ void gen_test_2_roots(sParams* params, sSolution *solution) //FIXME - лол к�
     *solution = {2, x1, x2};
 }
 
+void gen_test_deg2_no_D(sParams* params, sSolution *solution)
+{
+    switch (rand() % 3)
+    {
+    case 0b00: // b и с - 0, 0
+        *params = {random_ab_nz(-TEST_RANGE, TEST_RANGE), .0, .0};
+        *solution = {1, .0, .0};
+        return;
+
+    case 0b01: // b и с - 0, !0
+        if (rand() % 2)
+        {
+            double x = random_ab_nz(0, TEST_RANGE);
+
+            double a = 0, c = 0;
+            do {                                            //FIXME (#4#): без циклов
+                c = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+                a = -c / (x * x);
+            } while (cmp_double(a, 0));
+
+            *params = {a, .0, c};
+            * solution = {2, -x, x};
+        }
+        else
+        {
+            double a = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+            int sign = (a < 0) ? -1 : 1;
+            double c = sign * random_ab_nz(0, TEST_RANGE);
+
+            *params = {a, .0, c};
+            *solution = {0, .0, .0};
+        }
+        return;
+
+    case 0b10: // b и с - !0, 0
+    {
+        double x2 = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+
+        double b = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+        double a = -b  / x2;
+
+        *params = {a, b, .0};
+        *solution = {2, .0, x2};
+
+        if (x2 < 0)
+            my_swap(&solution->x1, &solution->x2);
+
+        return;
+    }
+
+    default:
+        fprintf(stderr, "\nERROR(): gen_test_2_roots_no_D(): unknown case\n");
+        return;
+    }
+}
+
 void gen_test_INFTY_roots(sParams* params, sSolution *solution)
 {
     *params = {.0, .0, .0};
@@ -172,7 +231,7 @@ int run_test(const sParams* params, const sSolution *ref_solution)
     sSolution test_solution = {0, .0, .0};
     solve_general(params, &test_solution);
 
-    if (!cmp_sSolution(ref_solution, &test_solution))
+    if (cmp_sSolution(ref_solution, &test_solution))
         return 0;
 
     fprintf(stderr,

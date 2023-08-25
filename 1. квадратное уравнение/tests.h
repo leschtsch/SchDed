@@ -75,6 +75,8 @@ void gen_test_1_root_deg2(sParams* params, sSolution *solution);
  */
 void gen_test_2_roots(sParams* params, sSolution *solution);
 
+void gen_test_deg2_no_D(sParams* params, sSolution *solution);
+
 /**
  * @brief тест: случай с бесконечностью корней
  *

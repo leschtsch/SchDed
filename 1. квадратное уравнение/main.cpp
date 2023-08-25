@@ -13,8 +13,8 @@
  * @brief первый и единственный файл
  */
 
-// TODO - доки файлов
-// TODO - readme
+// TODO (#2 #): доки файлов
+// TODO (#4#): readme
 
 #include "TXLib.h"
 

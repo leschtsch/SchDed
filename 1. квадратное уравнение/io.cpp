@@ -11,11 +11,11 @@ int input(int argc, char *argv[], sParams* params)
 {
     assert(params!=NULL);
 
-    int inp_cl_res = ERR_LACK_CL_NUM;
+    int inp_cl_res = ERR_CLI_TOO_FEW_NUM;
     if (argc > 1)
         inp_cl_res = input_cl(argc, argv, params);
 
-    if (inp_cl_res != ERR_LACK_CL_NUM) // расшифровать CLI, TO_FEW
+    if (inp_cl_res != ERR_CLI_TOO_FEW_NUM)
         return inp_cl_res;
     if (!FLAGS.SOLVE_EQUATION)
         return 0;
@@ -50,9 +50,9 @@ int input_cl(int argc, char *argv[], sParams* params)
         if (argv[i][0] == '\0')
             continue;
 
-        tmp_num = strtod(argv[i],&p); // TODO - sscanf? Переделать?
+        tmp_num = strtod(argv[i],&p); // TODO (#2#): sscanf? Переделать?
         if (*p == '\0' && ni >= 3)
-            return ERR_MANY_CL_NUM;
+            return ERR_CLI_TOO_MANY_NUM;
         else if (*p == '\0' && ni < 3)
             numbers[ni++] = tmp_num;
         else
@@ -65,7 +65,7 @@ int input_cl(int argc, char *argv[], sParams* params)
     }
 
     if (ni < 3)
-        return ERR_LACK_CL_NUM;
+        return ERR_CLI_TOO_FEW_NUM;
 
     params->a = numbers[0];
     params->b = numbers[1];
@@ -77,7 +77,7 @@ int input_cl(int argc, char *argv[], sParams* params)
 int process_arg(const char * arg)
 {
     if (arg[0] != '-' || arg[1] != 't')
-        return ERR_BAD_CL_ARG;
+        return ERR_CLI_BAD_ARG;
 
     FLAGS.RUN_TESTS = 1;
     FLAGS.SOLVE_EQUATION = 0;
@@ -121,8 +121,8 @@ void fix_zero(sSolution *solution)
 {
     assert(solution != NULL);
 
-    if (!cmp_double(solution->x1, .0))
+    if (cmp_double(solution->x1, .0))
         solution->x1 = .0;
-    if (!cmp_double(solution->x2, .0))
+    if (cmp_double(solution->x2, .0))
         solution->x2 = .0;
 }

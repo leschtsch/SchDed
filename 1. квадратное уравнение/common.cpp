@@ -8,35 +8,45 @@
 
 int cmp_double(double a, double b)
 {
-    if (fabs(a - b) < EPS)
-        return 0;
-    return (a < b) ? -1 : 1;
+    return (fabs(a - b) < EPS);
 }
 
-int cmp_sSolution(const sSolution *a, const sSolution *b)// TODO - неинтуитивно
+int cmp_sSolution(const sSolution *a, const sSolution *b)
 {
-    if (a->rnum != b->rnum)
-        return (a->rnum < b->rnum) ? -1 : 1;
-    int cmp_res = cmp_double(a->x1, b->x1);
-    return (cmp_res) ? cmp_res : cmp_double(a->x2, b->x2);
-} //TODO - ассерты правильности структур в этой функции и после всяких return'ов
+    return (a->rnum == b->rnum && cmp_double(a->x1, b->x1) && cmp_double(a->x2, b->x2));
+} //TODO (#3#): ассерты правильности структур в этой функции и после всяких return'ов
 
 double random_ab(double a, double b)
 {
-    assert(cmp_double(a, b) < 0);
+    assert(a < b);
 
-    if (!cmp_double(a, b))
+    if (cmp_double(a, b))
         return a;
 
-    return (double) rand() / RAND_MAX * (b - a) + a;
+    double res =  (double) rand() / RAND_MAX * (b - a) + a;
+    return round(res / EPS) * EPS; // иначе беды с маленькими значениями
 }
 
 double random_ab_nz(double a, double b)
 {
-    double res = random_ab(a, b); // TODO - формула без 0 а не это вот всерооролры
-    while (!cmp_double(res, .0))// вероятность этого крайне мала 1!!1!1
-        res = random_ab(a, b);
-    return res;
+    assert(a < b);
+
+    if (cmp_double(a,b))
+        return a;
+    if (cmp_double(a, 0))
+        return random_ab(EPS, b);
+    if (cmp_double(b, 0))
+        return random_ab(a, -EPS);
+    if(a > 0 || b < 0)
+        return random_ab(a, b);
+
+    /*if (random_ab(0,1) < (0 - a) / (b - a))
+        return random_ab(a, -EPS);
+    else
+        return random_ab(EPS, b);*/
+
+    double res = random_ab(a, b);
+    return (cmp_double(res, 0)) ? res - EPS : res;
 };
 
 void my_swap (double * a, double * b)
@@ -58,18 +68,18 @@ void process_error(int err_code)
         printf("Аргументы введены неверно / ошибка ввода.\n");
         break;
 
-    case ERR_BAD_CL_ARG:
+    case ERR_CLI_BAD_ARG:
         printf("Неизвестный аргумент (флаг) командной строки. Известные флаги:\n"
                "\t-t[num] запускает num тестов. Если num отсутствует, неразборчив "
                "или <= 0, запускается кол-во тестов по умолчанию."
         );
         break;
 
-    case ERR_LACK_CL_NUM:
+    case ERR_CLI_TOO_FEW_NUM:
         printf("Недостаточно чисел в командной строке.\n");
         break;
 
-    case ERR_MANY_CL_NUM:
+    case ERR_CLI_TOO_MANY_NUM:
         printf("Слишком много чисел в командной строке.\n");
         break;
 
