@@ -47,13 +47,7 @@ int main(int argc, char *argv[])
     }
 
     if (FLAGS.RUN_TESTS)
-    {
-        assert(TESTS_N > 0);
-
-        int tf = run_tests(TESTS_N);
-        printf("тестов провалено: %d / %d, доля ошибок: %f\n", tf, TESTS_N, (double) tf / TESTS_N); //TODO - stdin и stderr путаются
-        return tf;
-    }
+        return run_tests(TESTS_N);
 
     sSolution solution = {0, .0, .0};
     solve_general(&params, &solution);

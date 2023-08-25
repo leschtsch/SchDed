@@ -124,7 +124,7 @@ double random_ab(double a, double b);
  */
 double random_ab_nz(double a, double b);
 
-void swap (double * a, double * b); ///<swap, т. к. встроенный, поже,  в std::
+void my_swap (double * a, double * b); ///<swap, т. к. встроенный, поже,  в std::
 
 /**
  * @brief обработка ошибок

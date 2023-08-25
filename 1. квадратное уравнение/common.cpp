@@ -39,7 +39,7 @@ double random_ab_nz(double a, double b)
     return res;
 };
 
-void swap (double * a, double * b) ..TODO - myswap
+void my_swap (double * a, double * b)
 {
     double tmp = *a;
     *a = *b;
@@ -59,7 +59,10 @@ void process_error(int err_code)
         break;
 
     case ERR_BAD_CL_ARG:
-        printf("Неизвестный аргумент командной строки.\n");
+        printf("Неизвестный аргумент (флаг) командной строки. Известные флаги:\n"
+               "\t-t[num] запускает num тестов. Если num отсутствует, неразборчив "
+               "или <= 0, запускается кол-во тестов по умолчанию."
+        );
         break;
 
     case ERR_LACK_CL_NUM:

@@ -9,7 +9,7 @@
 
 void solve_general(const sParams* params, sSolution *solution)
 {
-    if (cmp_double(params->a, 0)) // TODO - поведение cmp неинтуитивно
+    if (cmp_double(params->a, 0))
         solve_deg2(params, solution);
     else if (cmp_double(params->b, 0))
         solve_deg1(params, solution);
@@ -25,16 +25,22 @@ void solve_deg2(const sParams* params, sSolution *solution)
     double b = params->b;
     double c = params->c;
     double D = b * b - 4 * a * c;
-    //TODO - sqrt_D
 
     if (!cmp_double(D, .0))
         *solution = {1, -b / (2 * a), .0};
     else if (D < 0)
         *solution = {0, .0, .0};
     else if (a>0)
-        *solution = {2, (-b - sqrt(D)) / (2 * a), (-b + sqrt(D)) / (2 * a)}; //TODO - случаи без дисккримминанта
+    {
+        double sqrt_D = sqrt(D);
+        *solution = {2, (-b - sqrt_D) / (2 * a), (-b + sqrt_D) / (2 * a)};
+        //TODO - случаи без дискримминанта (а для них тесты)
+    }
     else
-        *solution = {2, (-b + sqrt(D)) / (2 * a), (-b - sqrt(D)) / (2 * a)};
+    {
+        double sqrt_D = sqrt(D);
+        *solution = {2, (-b + sqrt_D) / (2 * a), (-b - sqrt_D) / (2 * a)};
+    }
 
 
 }

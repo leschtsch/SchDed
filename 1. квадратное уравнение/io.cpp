@@ -50,7 +50,7 @@ int input_cl(int argc, char *argv[], sParams* params)
         if (argv[i][0] == '\0')
             continue;
 
-        tmp_num = strtod(argv[i],&p); // TODO - sscanf?
+        tmp_num = strtod(argv[i],&p); // TODO - sscanf? Переделать?
         if (*p == '\0' && ni >= 3)
             return ERR_MANY_CL_NUM;
         else if (*p == '\0' && ni < 3)
@@ -90,7 +90,6 @@ int process_arg(const char * arg)
 
     return OK;
 }
-
 
 void output(sSolution *solution)
 {

@@ -22,41 +22,28 @@ int run_tests(int tests_n)
         if (run_test(&params, &ref_solution))
             tests_failed++;
     }
+
+    fflush(stderr);
+    printf("тестов провалено: %d / %d, доля ошибок: %f\n",
+           tests_failed, TESTS_N, (double) tests_failed / TESTS_N
+           );
+
     return tests_failed;
 }
 
 void gen_test(sParams* params, sSolution *solution)
 {
-    switch (rand() % 6) // не лучший способ, но простой
-    {
-    case 0:  //TODO - массив указ на функции
-        gen_test_0_roots_deg0(params, solution);
-        break;
+    void (*test_cases[])(sParams *, sSolution *)= {
+                        *gen_test_0_roots_deg0,
+                        *gen_test_0_roots_deg2,
+                        *gen_test_1_root_deg1,
+                        *gen_test_1_root_deg2,
+                        *gen_test_2_roots,
+                        *gen_test_INFTY_roots
+                        };
 
-    case 1:
-        gen_test_0_roots_deg0(params, solution);
-        break;
-
-    case 2:
-        gen_test_1_root_deg1(params, solution);
-        break;
-
-    case 3:
-        gen_test_1_root_deg2(params, solution);
-        break;
-
-    case 4:
-        gen_test_2_roots(params, solution);
-        break;
-
-    case 5:
-        gen_test_INFTY_roots(params, solution);
-        break;
-
-    default:
-        fprintf(stderr,"\nERRROR: gen_test(): unknown test type\n");
-        break;
-    }
+    int cases_n = sizeof test_cases / sizeof test_cases[0];
+    (*test_cases[rand() % (cases_n)])(params, solution);
 }
 
 void gen_test_0_roots_deg0(sParams* params, sSolution *solution)
@@ -72,6 +59,7 @@ void gen_test_0_roots_deg2(sParams* params, sSolution *solution)
     double b = random_ab(-TEST_RANGE, TEST_RANGE);
 
     double y  = - (b * b) / (4 * a); // y вершины, если  c = 0
+    int sign = (a < 0) ? -1 : 1; // восходящая или нисходящая парабола
     /*
      *  y                           =
      *  ax^2+bx                     =
@@ -83,7 +71,7 @@ void gen_test_0_roots_deg2(sParams* params, sSolution *solution)
      * Порядок дискриминанта - TETS_RANGE^2
      */
 
-    double c = random_ab(-y+EPS, y + TEST_RANGE);
+    double c = -y + sign * random_ab(EPS, TEST_RANGE);
 
     *params = (sParams){a, b, c};
     *solution = {0, .0, .0};
@@ -153,12 +141,21 @@ void gen_test_2_roots(sParams* params, sSolution *solution) //FIXME - лол к�
     while (!cmp_double(x1, x2)  || !cmp_double(x1 + x2, 0))
         x2 = random_ab(-TEST_RANGE, TEST_RANGE);
     if (x1 > x2)
-        swap(&x1, &x2);
+        my_swap(&x1, &x2);
 
     double b = random_ab_nz(-TEST_RANGE, TEST_RANGE);
     double a = -b / (x1+x2);
     double c = -b * x1 / (x1+x2) * x2;
-    // TODO - формула
+    /*
+     * 1.   x1 + x2 = -b / a         =>
+     *      a = -b / (x1 + x2)
+     *
+     * 2.   x1 * x2 = c / a          =>
+     *      c = x1 * x2  * a         =
+     *      -b * x1 * x2 / (x1 + x2)
+     *
+     * Порядок дискриминанта - TETS_RANGE^2
+     */
 
     *params= (sParams){a, b, c};
     *solution = {2, x1, x2};
@@ -175,12 +172,13 @@ int run_test(const sParams* params, const sSolution *ref_solution)
     sSolution test_solution = {0, .0, .0};
     solve_general(params, &test_solution);
 
-    if (cmp_sSolution(ref_solution, &test_solution))
-    {
-        fprintf(stderr,
+    if (!cmp_sSolution(ref_solution, &test_solution))
+        return 0;
+
+    fprintf(stderr,
                 "TEST_FAILED:\n"
                 "\tПараметры: %.9f\t %.9f\t %.9f\n"
-                "\tДискриминант: %.9f\n"
+                "\tДискриминант: %g\n"
                 "\tОжидаемое решение: %d\t %.9f\t %.9f\n"
                 "\tОтвет функции:     %d\t %.9f\t %.9f\n",
                 params->a, params->b, params->c,
@@ -188,7 +186,5 @@ int run_test(const sParams* params, const sSolution *ref_solution)
                 ref_solution->rnum, ref_solution->x1, ref_solution->x2,
                 test_solution.rnum, test_solution.x1, test_solution.x2
                 );
-        return 1;
-    } else
-        return 0;
+    return 1;
 }
