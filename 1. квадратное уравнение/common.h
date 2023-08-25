@@ -54,6 +54,7 @@ typedef struct
 {
     unsigned char RUN_TESTS: 1;      ///< Запускать ли тесты
     unsigned char SOLVE_EQUATION: 1; ///< решать ли уравнение
+    unsigned char PRINT_HELP: 1; ///< вывести ли страницу помощи
 } sFlags;
 
 const int INFTY = -1;           ///< значение для бесконечности корней

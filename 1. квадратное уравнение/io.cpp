@@ -102,6 +102,15 @@ int process_flag(const char * arg)
     else if (strcmp(arg, "-s") == 0)
     {
         FLAGS.SOLVE_EQUATION = 1;
+
+        return OK;
+    }
+    else if (strcmp(arg, "-h") == 0 ||
+               strcmp(arg, "--help") == 0)
+    {
+        FLAGS = {};
+        FLAGS.PRINT_HELP = 1;
+
         return OK;
     }
     return ERR_CLI_BAD_ARG;
