@@ -57,6 +57,14 @@ void my_swap (double * a, double * b)
     *b = tmp;
 }
 
+int is_number(char * s)
+{
+    char * p = s;
+    strtod(s, &p);
+
+    return (p != s && *p == '\0');
+}
+
 void process_error(int err_code)
 {
     switch (err_code)
@@ -71,8 +79,8 @@ void process_error(int err_code)
 
     case ERR_CLI_BAD_ARG:
         printf("Неизвестный аргумент (флаг) командной строки. Известные флаги:\n"
-               "\t-t[num] Запускает num тестов. Если num отсутствует, неразборчив "
-               "или <= 0, запускается кол-во тестов по умолчанию."
+               "\t-t[num] Запускает num тестов. Если num отсутствует "
+               "или <= 0, запускается кол-во тестов по умолчанию. "
                "Отключает решение уравнения.\n"
                "\t-s Включает решение уранения. Должен идти после отключения.\n"
         );

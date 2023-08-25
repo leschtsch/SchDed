@@ -132,6 +132,13 @@ double random_ab_nz(double a, double b);
 void my_swap (double * a, double * b); ///<swap, т. к. встроенный, поже,  в std::
 
 /**
+ * @brief проверяет, является ли строка числом
+ * @param s - строка
+ * @return 1 если строка - число, 0 иначе
+ */
+int is_number(char * s);
+
+/**
  * @brief обработка ошибок
  *
  * Ошибки пока только ошибки пользователя.

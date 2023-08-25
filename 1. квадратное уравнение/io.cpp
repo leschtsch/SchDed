@@ -4,12 +4,12 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "common.h"
 
 int find_flags(int argc, char *argv[])
 {
-    char * p = NULL;
     int process_res = 0;
 
     for (int i = 1; i < argc; i++)
@@ -17,8 +17,7 @@ int find_flags(int argc, char *argv[])
         if (argv[i][0] == '\0')
             continue;
 
-        strtod(argv[i],&p);
-        if (*p == '\0')
+        if (is_number(argv[i]))
             continue;
 
         process_res = process_flag(argv[i]);
@@ -59,8 +58,6 @@ int input_cl(int argc, char *argv[], sParams* params)
     double numbers[3]={0, 0, 0};
     int ni = 0;
 
-    char * p = NULL;
-
     double tmp_num = 0;
 
     for (int i = 1;  i < argc; i++)
@@ -69,11 +66,13 @@ int input_cl(int argc, char *argv[], sParams* params)
         if (argv[i][0] == '\0')
             continue;
 
-        tmp_num = strtod(argv[i],&p); // TODO (#2#): sscanf?
+        if (!sscanf(argv[i],"%lf", &tmp_num))
+            continue;
+        // TODO (#2#): sscanf?
 
-        if (*p == '\0' && ni >= 3)
+        if (ni >= 3)
             return ERR_CLI_TOO_MANY_NUM;
-        else if (*p == '\0' && ni < 3)
+        else
             numbers[ni++] = tmp_num;
 
     }
@@ -90,22 +89,18 @@ int input_cl(int argc, char *argv[], sParams* params)
 
 int process_flag(const char * arg)
 {
-int tmp_num = 0;
-
-    if (arg[0] == '-' && arg[1] == 't')
+    int tmp_num = 0;
+    if (sscanf(arg, "-t%d", &tmp_num))
     {
         FLAGS.RUN_TESTS = 1;
         FLAGS.SOLVE_EQUATION = 0;
-        arg += 2;
 
-        char *p = NULL;
-        tmp_num = strtol(arg, &p, 10);
-        if (*p == '\0' && p != arg && tmp_num > 0)
+        if (tmp_num > 0)
             TESTS_N = tmp_num;
 
         return OK;
     }
-    else if (arg[0] == '-' && arg[1] == 's')
+    else if (strcmp(arg, "-s") == 0)
     {
         FLAGS.SOLVE_EQUATION = 1;
         return OK;
