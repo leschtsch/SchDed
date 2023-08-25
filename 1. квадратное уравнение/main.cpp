@@ -13,8 +13,6 @@
  * @brief первый и единственный файл
  */
 
-// TODO (#4#): readme
-
 #include "TXLib.h"
 
 #include <assert.h>

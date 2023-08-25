@@ -14,7 +14,7 @@ int cmp_double(double a, double b)
 int cmp_sSolution(const sSolution *a, const sSolution *b)
 {
     return (a->rnum == b->rnum && cmp_double(a->x1, b->x1) && cmp_double(a->x2, b->x2));
-} //TODO (#3#): ассерты правильности структур в этой функции и после всяких return'ов
+} //TODO (#1#): ассерты правильности структур в этой функции и после всяких return'ов
 
 double random_ab(double a, double b)
 {

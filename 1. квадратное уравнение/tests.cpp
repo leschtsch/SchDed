@@ -139,7 +139,7 @@ void gen_test_2_roots(sParams* params, sSolution *solution)
 
     double x1 = random_ab(-TEST_RANGE, TEST_RANGE);
     double x2 = random_ab(-TEST_RANGE, TEST_RANGE);
-    while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0)) //FIXME (#4#): без циклов
+    while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0)) //FIXME (#2#): без циклов
                                                             // Взять типа 100 EPS?
         x2 = random_ab(-TEST_RANGE, TEST_RANGE);
     if (x1 > x2)
@@ -180,7 +180,7 @@ void gen_test_deg2_no_D(sParams* params, sSolution *solution)
             double x = random_ab_nz(0, TEST_RANGE);
 
             double a = 0, c = 0;
-            do {                                            //FIXME (#4#): без циклов
+            do {                                            //FIXME (#2#): без циклов
                 c = random_ab_nz(-TEST_RANGE, TEST_RANGE);
                 a = -c / (x * x);
             } while (cmp_double(a, 0));

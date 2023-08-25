@@ -68,7 +68,6 @@ int input_cl(int argc, char *argv[], sParams* params)
 
         if (!sscanf(argv[i],"%lf", &tmp_num))
             continue;
-        // TODO (#2#): sscanf?
 
         if (ni >= 3)
             return ERR_CLI_TOO_MANY_NUM;
