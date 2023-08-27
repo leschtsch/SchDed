@@ -10,6 +10,9 @@
 
 int find_flags(int argc, char *argv[])
 {
+    assert(argc > 0);
+    assert(argv);
+
     int process_res = 0;
 
     for (int i = 1; i < argc; i++)
@@ -30,7 +33,9 @@ int find_flags(int argc, char *argv[])
 
 int input(int argc, char *argv[], sParams* params)
 {
-    assert(params!=NULL);
+    assert(argc > 0);
+    assert(argv);
+    assert(params);
 
     int inp_cl_res = ERR_CLI_TOO_FEW_NUM;
 
@@ -53,7 +58,9 @@ int input(int argc, char *argv[], sParams* params)
 
 int input_cl(int argc, char *argv[], sParams* params)
 {
-    assert(params!=NULL);
+    assert(argc > 0);
+    assert(argv);
+    assert(params);
 
     double numbers[3]={0, 0, 0};
     int ni = 0;
@@ -88,6 +95,8 @@ int input_cl(int argc, char *argv[], sParams* params)
 
 int process_flag(const char * arg)
 {
+    assert(arg);
+
     int tmp_num = 0;
     if (sscanf(arg, "-t%d", &tmp_num))
     {
@@ -118,6 +127,8 @@ int process_flag(const char * arg)
 
 void output(sSolution *solution)
 {
+    assert(solution);
+
     fix_zero(solution);
 
     printf("У уравнения ");
@@ -144,7 +155,7 @@ void output(sSolution *solution)
 
 void fix_zero(sSolution *solution)
 {
-    assert(solution != NULL);
+    assert(solution);
 
     if (cmp_double(solution->x1, .0))
         solution->x1 = .0;

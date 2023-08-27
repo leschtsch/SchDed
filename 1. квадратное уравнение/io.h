@@ -8,7 +8,6 @@
 
 #include "common.h"
 
-//TODO - help
 /**
  * @brief обработчик флага
  *

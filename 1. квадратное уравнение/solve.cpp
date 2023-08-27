@@ -9,6 +9,9 @@
 
 void solve_general(const sParams* params, sSolution *solution)
 {
+    assert(params);
+    assert(solution);
+
     if (!cmp_double(params->a, 0))
         solve_deg2(params, solution);
     else if (!cmp_double(params->b, 0))
@@ -19,6 +22,9 @@ void solve_general(const sParams* params, sSolution *solution)
 
 void solve_deg2(const sParams* params, sSolution *solution)
 {
+    assert(params);
+    assert(solution);
+
     assert(!cmp_double(params->a, .0));
 
     double a = params->a;
@@ -44,6 +50,7 @@ void solve_deg2(const sParams* params, sSolution *solution)
             *solution = {2, -sqrt_ca, sqrt_ca};
         }
         return;
+
     case 0b10:
         *solution = {2, 0, -b / a};
 
@@ -73,6 +80,8 @@ void solve_deg2(const sParams* params, sSolution *solution)
 
 void solve_deg1(const sParams* params, sSolution *solution)
 {
+    assert(params);
+    assert(solution);
 
     assert(cmp_double(params->a, .0));
     assert(!cmp_double(params->b, .0));
@@ -84,6 +93,9 @@ void solve_deg1(const sParams* params, sSolution *solution)
 
 void solve_deg0(const sParams* params, sSolution *solution)
 {
+    assert(params);
+    assert(solution);
+
     assert(cmp_double(params->a, .0));
     assert(cmp_double(params->b, .0));
     *solution =  (!cmp_double(params->c, .0)) ? (sSolution){0, .0, .0} : (sSolution){INFTY, .0, .0};

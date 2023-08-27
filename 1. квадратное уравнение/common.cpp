@@ -8,13 +8,21 @@
 
 int cmp_double(double a, double b)
 {
+    assert(isfinite(a));
+    assert(isfinite(b));
+    assert(!isnan(a));
+    assert(!isnan(b));
+
     return (fabs(a - b) < EPS);
 }
 
 int cmp_sSolution(const sSolution *a, const sSolution *b)
 {
+    assert(a->x1 < a->x2 || a->rnum < 2);
+    assert(b->x1 < b->x2 || b->rnum < 2);
+
     return (a->rnum == b->rnum && cmp_double(a->x1, b->x1) && cmp_double(a->x2, b->x2));
-} //TODO (#1#): ассерты правильности структур в этой функции и после всяких return'ов
+}
 
 double random_ab(double a, double b)
 {
@@ -41,10 +49,10 @@ double random_ab_nz(double a, double b)
         return random_ab(a, b);
 
 
-    if (random_ab(0,1) < (0 - a) / (b - a))
+    /*if (random_ab(0,1) < (0 - a) / (b - a))
         return random_ab(a, -EPS);
     else
-        return random_ab(EPS, b); // какого-то выдает на грани точности
+        return random_ab(EPS, b); - это какого-то выдает на грани точности*/
 
     double res = random_ab(a, b);
     return (cmp_double(res, 0)) ? res - EPS : res; // ну будет слегка кринж с распределением, ок
@@ -52,6 +60,14 @@ double random_ab_nz(double a, double b)
 
 void my_swap (double * a, double * b)
 {
+    assert(a);
+    assert(b);
+
+    assert(isfinite(*a));
+    assert(isfinite(*b));
+    assert(!isnan(*a));
+    assert(!isnan(*b));
+
     double tmp = *a;
     *a = *b;
     *b = tmp;
@@ -59,6 +75,8 @@ void my_swap (double * a, double * b)
 
 int is_number(char * s)
 {
+    assert(s);
+
     char * p = s;
     strtod(s, &p);
 

@@ -44,7 +44,7 @@ const char * HELP_MSG = "Некоторые флаги отключают дру
                         "\t-t[num] запускает num тестов. Если num отсутствует, "
                             "или <= 0, запускается кол-во тестов "
                         "по умолчанию. Отключает решение уравнения.\n"
-                        "\t-s Включает решение уранения. Должен идти после отключения.\n"
+                        "\t-s Включает решение уранения.\n"
                         "\t-h, --help Выводит помощь. Отключает остальное.";
 
 
@@ -83,6 +83,8 @@ int main(int argc, char *argv[])
 
         sSolution solution = {0, .0, .0};
         solve_general(&params, &solution);
+
+        assert(solution.x1 < solution.x2 || solution.rnum < 2);
 
         output(&solution);
     }

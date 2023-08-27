@@ -33,6 +33,9 @@ int run_tests(int tests_n)
 
 void gen_test(sParams* params, sSolution *solution)
 {
+    assert(params);
+    assert(solution);
+
     void (*test_cases[])(sParams *, sSolution *)= {
                         *gen_test_0_roots_deg0,
                         *gen_test_0_roots_deg2,
@@ -49,6 +52,9 @@ void gen_test(sParams* params, sSolution *solution)
 
 void gen_test_0_roots_deg0(sParams* params, sSolution *solution)
 {
+    assert(params);
+    assert(solution);
+
     double c = random_ab_nz(-TEST_RANGE, TEST_RANGE);
     *params = {.0, .0, c};
     *solution = {0, .0, .0};
@@ -56,6 +62,9 @@ void gen_test_0_roots_deg0(sParams* params, sSolution *solution)
 
 void gen_test_0_roots_deg2(sParams* params, sSolution *solution)
 {
+    assert(params);
+    assert(solution);
+
     double a = random_ab_nz(EPS, TEST_RANGE);
     double b = random_ab(-TEST_RANGE, TEST_RANGE);
 
@@ -81,6 +90,9 @@ void gen_test_0_roots_deg2(sParams* params, sSolution *solution)
 
 void gen_test_1_root_deg1(sParams* params, sSolution *solution)
 {
+    assert(params);
+    assert(solution);
+
     if (random_ab(0,1) < ROOTS_0_PROB)
     {
         *params  = {.0, random_ab_nz(-TEST_RANGE, TEST_RANGE), .0};
@@ -98,6 +110,9 @@ void gen_test_1_root_deg1(sParams* params, sSolution *solution)
 
 void gen_test_1_root_deg2(sParams* params, sSolution *solution)
 {
+    assert(params);
+    assert(solution);
+
     if (random_ab(0,1)<ROOTS_0_PROB)
     {
         *params  = {random_ab_nz(-TEST_RANGE, TEST_RANGE), 0, .0};
@@ -125,6 +140,9 @@ void gen_test_1_root_deg2(sParams* params, sSolution *solution)
 
 void gen_test_2_roots(sParams* params, sSolution *solution)
 {
+    assert(params);
+    assert(solution);
+
     if ((random_ab(0,1) < ROOTS_0_PROB))
     {
         double x1 = random_ab_nz(EPS,TEST_RANGE);
@@ -167,6 +185,9 @@ void gen_test_2_roots(sParams* params, sSolution *solution)
 
 void gen_test_deg2_no_D(sParams* params, sSolution *solution)
 {
+    assert(params);
+    assert(solution);
+
     switch (rand() % 3)
     {
     case 0b00: // b и с - 0, 0
@@ -223,12 +244,18 @@ void gen_test_deg2_no_D(sParams* params, sSolution *solution)
 
 void gen_test_INFTY_roots(sParams* params, sSolution *solution)
 {
+    assert(params);
+    assert(solution);
+
     *params = {.0, .0, .0};
     *solution = {INFTY, .0, .0};
 }
 
 int run_test(const sParams* params, const sSolution *ref_solution)
 {
+    assert(params);
+    assert(ref_solution);
+
     sSolution test_solution = {0, .0, .0};
     solve_general(params, &test_solution);
 
