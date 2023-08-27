@@ -52,9 +52,10 @@ enum errors
  */
 typedef struct
 {
-    unsigned char RUN_TESTS: 1;      ///< Запускать ли тесты
-    unsigned char SOLVE_EQUATION: 1; ///< решать ли уравнение
-    unsigned char PRINT_HELP: 1; ///< вывести ли страницу помощи
+    unsigned char RUN_TESTS: 1;         ///< Запускать ли тесты
+    unsigned char SOLVE_EQUATION: 1;    ///< Решать ли уравнение
+    unsigned char PRINT_HELP: 1;        ///< Вывести ли страницу помощи
+    unsigned char PRINT_TESTS_REM :1;   ///< Писать, сколько тестов осталось
 } sFlags;
 
 const int INFTY = -1;           ///< значение для бесконечности корней
@@ -71,10 +72,10 @@ const double TEST_RANGE = 1e3;  /**<
                                  */
 
 const double ROOTS_0_PROB = 1e-2;    /**<
-                                 * @brief вероятность особог случая в тесте
+                                 * @brief вероятность особого случая в тесте
                                  *
                                  * тесты распадаются на случаи,
-                                 * когда корень (сумма корней) 0 и не 0. Это не
+                                 * когда корень  0 и не 0. Это не
                                  * заслуживает разбиения на отдельные функции,
                                  * но заслуживает рассмотрения,
                                  * а вероятность 0 в рандоме КРАЙНЕ МАЛА!1!
@@ -83,8 +84,9 @@ const double ROOTS_0_PROB = 1e-2;    /**<
                                  * @see gen_test_1_root_deg1, gen_test_2_roots
                                  */
 
-extern int TESTS_N; ///< кол-во тестов по умолчанию
-extern sFlags FLAGS; ///< глобальные флаги
+extern int TESTS_N;                 ///< кол-во тестов по умолчанию
+extern int PRINT_TESTS_REM_FREQ;    ///< как часто выводить кол-во оставшихся тестов
+extern sFlags FLAGS;                ///< глобальные флаги
 
 /**
  * @brief сравнивает два double

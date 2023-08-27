@@ -107,6 +107,14 @@ int process_flag(const char * arg)
             TESTS_N = tmp_num;
 
         return OK;
+    } else if (sscanf(arg, "-p%d", &tmp_num))
+    {
+        FLAGS.PRINT_TESTS_REM = 1;
+
+        if (tmp_num > 0)
+            PRINT_TESTS_REM_FREQ = tmp_num;
+
+        return OK;
     }
     else if (strcmp(arg, "-s") == 0)
     {

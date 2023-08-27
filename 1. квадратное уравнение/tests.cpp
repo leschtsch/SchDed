@@ -15,6 +15,11 @@ int run_tests(int tests_n)
     int tests_failed = 0;
     for(;tests_n;tests_n--)
     {
+        if (FLAGS.PRINT_TESTS_REM && !(tests_n % PRINT_TESTS_REM_FREQ))
+        {
+            printf("Осталось  %d тест(а, ов).\n", tests_n);
+            fflush(stdout);
+        }
         sParams params = {.0, .0, .0};
         sSolution ref_solution = {0, .0, .0};
         gen_test(&params, &ref_solution);
@@ -22,6 +27,7 @@ int run_tests(int tests_n)
         if (run_test(&params, &ref_solution))
             tests_failed++;
     }
+    printf("Осталось 0 тестов.\n");
 
     fflush(stderr);
     printf("тестов провалено: %d / %d, доля ошибок: %f\n",
@@ -113,13 +119,6 @@ void gen_test_1_root_deg2(sParams* params, sSolution *solution)
     assert(params);
     assert(solution);
 
-    if (random_ab(0,1)<ROOTS_0_PROB)
-    {
-        *params  = {random_ab_nz(-TEST_RANGE, TEST_RANGE), 0, .0};
-        *solution = {1, .0, .0};
-        return;
-    }
-
     double x = random_ab_nz(-TEST_RANGE, TEST_RANGE);
     double b = random_ab(-TEST_RANGE, TEST_RANGE);
 
@@ -143,27 +142,24 @@ void gen_test_2_roots(sParams* params, sSolution *solution)
     assert(params);
     assert(solution);
 
-    if ((random_ab(0,1) < ROOTS_0_PROB))
-    {
-        double x1 = random_ab_nz(EPS,TEST_RANGE);
-
-        double c = -random_ab_nz(-TEST_RANGE, TEST_RANGE);
-        double a = -c / (x1 * x1);
-
-        *params = {a, 0, c};
-        *solution = {2, -x1, x1};
-
-    }
-
     double x1 = random_ab(-TEST_RANGE, TEST_RANGE);
     double x2 = random_ab(-TEST_RANGE, TEST_RANGE);
     while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0)) //FIXME (#2#): без циклов
-                                                            // Взять типа 100 EPS?
-        x2 = random_ab(-TEST_RANGE, TEST_RANGE);
+        x2 = random_ab(-TEST_RANGE, TEST_RANGE); // Взять типа 100 EPS?
+
     if (x1 > x2)
         my_swap(&x1, &x2);
+
+    /*if(cmp_double(x1, x2)) printf("1\n");
+    if(cmp_double((x1 + x2), 0)) printf("2\n");*/
+    while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0)) //FIXME (#2#): без циклов
+        x2 = random_ab(x1 + EPS, TEST_RANGE);
+
     double a = .0, b = .0, c = .0;
+    int i = 0;
     do {
+        i++;
+        printf("%d\n", i);
         b = random_ab_nz(-TEST_RANGE, TEST_RANGE);
         a = -b / (x1+x2);
         c = -b * x1 / (x1+x2) * x2;
@@ -200,11 +196,11 @@ void gen_test_deg2_no_D(sParams* params, sSolution *solution)
         {
             double x = random_ab_nz(0, TEST_RANGE);
 
-            double a = 0, c = 0;
-            do {                                            //FIXME (#2#): без циклов
-                c = random_ab_nz(-TEST_RANGE, TEST_RANGE);
-                a = -c / (x * x);
-            } while (cmp_double(a, 0));
+            double a = 0, c = 0, cx = 0;
+
+            cx = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+            c = cx * x;
+            a = -cx / x;
 
             *params = {a, .0, c};
             * solution = {2, -x, x};
