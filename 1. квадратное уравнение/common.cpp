@@ -31,8 +31,7 @@ double random_ab(double a, double b)
     if (cmp_double(a, b))
         return a;
 
-    double res =  (double) rand() / RAND_MAX * (b - a) + a;
-    return round(res / EPS) * EPS; // иначе беды с маленькими значениями
+    return (double) rand() / RAND_MAX * (b - a) + a;
 }
 
 double random_ab_nz(double a, double b)
@@ -46,17 +45,25 @@ double random_ab_nz(double a, double b)
         return random_ab(EPS, b);
     if (cmp_double(b, 0))
         return random_ab(a, -EPS);
+
     if(a > 0 || b < 0)
         return random_ab(a, b);
 
 
-    /*if (random_ab(0,1) < (0 - a) / (b - a))
+    /*
+    if (random_ab(0,1) < (0 - a) / (b - a))
         return random_ab(a, -EPS);
     else
-        return random_ab(EPS, b); - это какого-то выдает на грани точности*/
+        return random_ab(EPS, b);
+    !!! - это какого-то выдает на грани точности*/
 
     double res = random_ab(a, b);
-    return (cmp_double(res, 0)) ? res - EPS : res; // ну будет слегка кринж с распределением, ок
+
+    return (cmp_double(res, 0)) ? res - EPS : res; //ну будет слегка кринж с распределением, ок
+    /*
+     * Без разницы, + или - EPS, так как случай,
+     * когда одна из границ 0 разобран
+     */
 };
 
 void my_swap (double * a, double * b)

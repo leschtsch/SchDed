@@ -32,6 +32,7 @@ void solve_deg2(const sParams* params, sSolution *solution)
     double c = params->c;
 
     int bc = 2 * (!cmp_double(b, 0)) + !cmp_double(c, 0);
+
     switch(bc)
     {
     case 0b00:
@@ -98,5 +99,6 @@ void solve_deg0(const sParams* params, sSolution *solution)
 
     assert(cmp_double(params->a, .0));
     assert(cmp_double(params->b, .0));
+
     *solution =  (!cmp_double(params->c, .0)) ? (sSolution){0, .0, .0} : (sSolution){INFTY, .0, .0};
 }

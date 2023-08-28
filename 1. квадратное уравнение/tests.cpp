@@ -12,9 +12,11 @@ double get_time_rem(int tests_completed, int tests_n, clock_t start, clock_t cur
 {
     if (!tests_completed)
         return -1;
+
     double time_rem = (cur_time - start);
     time_rem /= CLOCKS_PER_SEC;
     time_rem *= (double) (tests_n - tests_completed) / tests_completed;
+
     return time_rem;
 }
 
@@ -24,13 +26,15 @@ int run_tests(int tests_n)
 
     int tests_failed = 0;
     clock_t start = clock();
+
     for(int i = 0;i < tests_n;i++)
     {
         if (FLAGS.PRINT_TESTS_REM && !(i % PRINT_TESTS_REM_FREQ))
         {
             printf(
                     "Осталось  %9d тест(а, ов).\tЭто ~ %-7.3f секунд\n",
-                    tests_n - i, get_time_rem(i, tests_n, start, clock())
+                    tests_n - i,
+		    get_time_rem(i, tests_n, start, clock())
                   );
             fflush(stdout);
         }
@@ -42,9 +46,11 @@ int run_tests(int tests_n)
         if (run_test(&params, &ref_solution))
             tests_failed++;
     }
+
     printf("Осталось 0 тестов.\n");
 
     fflush(stderr);
+
     printf("тестов провалено: %d / %d, доля ошибок: %f\n",
            tests_failed, TESTS_N, (double) tests_failed / TESTS_N
            );
@@ -66,8 +72,8 @@ void gen_test(sParams* params, sSolution *solution)
                         *gen_test_deg2_no_D,
                         *gen_test_INFTY_roots,
                         };
-
     int cases_n = sizeof test_cases / sizeof test_cases[0];
+
     (*test_cases[rand() % (cases_n)])(params, solution);
 }
 
@@ -135,9 +141,10 @@ void gen_test_1_root_deg2(sParams* params, sSolution *solution)
     assert(solution);
 
     double x = random_ab_nz(-TEST_RANGE, TEST_RANGE);
-    double b = random_ab(-TEST_RANGE, TEST_RANGE);
 
-    *params= (sParams){-b / (2 * x), b, -(b * x)/2};
+    double b = random_ab(-TEST_RANGE, TEST_RANGE);
+    double a = -b / (2 * x);
+    double c = -(b * x)/2;
     /*  Здесь x - x вершины
      *
      *  1.  x = -b / 2a => a = -b / 2x
@@ -149,6 +156,8 @@ void gen_test_1_root_deg2(sParams* params, sSolution *solution)
      *
      * Порядок дискриминанта - TETS_RANGE^2
      */
+
+    *params= (sParams){a, b, c};
     *solution = {1, x, .0};
 }
 
@@ -159,7 +168,7 @@ void gen_test_2_roots(sParams* params, sSolution *solution)
 
     double x1 = random_ab(-TEST_RANGE, TEST_RANGE);
     double x2 = random_ab(-TEST_RANGE, TEST_RANGE);
-    while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0))
+    while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0)) //TODO какая-то тонкая настройка, не трогать
         x2 = random_ab(-TEST_RANGE, TEST_RANGE);
 
     if (x1 > x2)

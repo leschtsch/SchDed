@@ -44,10 +44,9 @@ int input(int argc, char *argv[], sParams* params)
 
     if (inp_cl_res != ERR_CLI_TOO_FEW_NUM)
         return inp_cl_res;
-
     process_error(inp_cl_res);
-    printf("Введите коэффициэнты - три числа:\n");
 
+    printf("Введите коэффициэнты - три числа:\n");
     fflush(stdout);
 
     if (scanf("%lf %lf %lf", &params->a, &params->b, &params->c) < 3)
@@ -123,7 +122,7 @@ int process_flag(const char * arg)
         return OK;
     }
     else if (strcmp(arg, "-h") == 0 ||
-               strcmp(arg, "--help") == 0)
+             strcmp(arg, "--help") == 0)
     {
         FLAGS = {};
         FLAGS.PRINT_HELP = 1;
@@ -136,6 +135,7 @@ int process_flag(const char * arg)
 void output(sSolution *solution)
 {
     assert(solution);
+    assert(solution->x1 < solution->x2 || solution->rnum < 2);
 
     fix_zero(solution);
 
@@ -164,6 +164,7 @@ void output(sSolution *solution)
 void fix_zero(sSolution *solution)
 {
     assert(solution);
+    assert(solution->x1 < solution->x2 || solution->rnum < 2);
 
     if (cmp_double(solution->x1, .0))
         solution->x1 = .0;
