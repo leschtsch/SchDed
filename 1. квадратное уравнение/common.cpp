@@ -26,7 +26,7 @@ int cmp_sSolution(const sSolution *a, const sSolution *b)
 
 double random_ab(double a, double b)
 {
-    assert(a < b);
+    assert(a <= b);
 
     if (cmp_double(a, b))
         return a;
@@ -37,7 +37,8 @@ double random_ab(double a, double b)
 
 double random_ab_nz(double a, double b)
 {
-    assert(a < b);
+    assert (!cmp_double(a, 0) || !cmp_double(b, 0));
+    assert(a <= b);
 
     if (cmp_double(a,b))
         return a;

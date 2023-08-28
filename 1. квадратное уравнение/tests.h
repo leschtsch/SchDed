@@ -6,7 +6,21 @@
 #ifndef TESTS_H
 #define TESTS_H
 
+#include <time.h>
+
 #include  "common.h"
+
+/**
+ * @brief сколько времени осталось на оставшиеся тесты
+ *
+ * @param tests_completed сколько завершено тестов
+ * @param tests_n сколько всего тестов
+ * @param start время начала исполнения
+ * @param cur_time текущее время
+ *
+ * @return оставшееся время в секундах
+ */
+double get_time_rem(int tests_completed, int tests_n, clock_t start, clock_t cur_time);
 
 /**
  * @brief запускает случайные тесты
@@ -72,11 +86,15 @@ void gen_test_1_root_deg2(sParams* params, sSolution *solution);
 /**
  * @brief тест: случай с 2 корнями и a != 0
  *
+ * @note иногда генерит значения на грани точности.
+ * В таких случаях я просто переделываю,
+ * т. к. ничего лучше не придумал. Но таких случаев
+ * крайне мало.
+ *
  * @param [out] params указатель на структуру для записи параметров
  * @param [out] params указатель на структуру для записи ответов
  */
 void gen_test_2_roots(sParams* params, sSolution *solution);
-
 
 /**
  * @brief тест: случаи с 2 корнями и a != 0, которые решается без дискриминанта

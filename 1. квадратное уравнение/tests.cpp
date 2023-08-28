@@ -1,25 +1,40 @@
 #include "tests.h"
 
 #include <assert.h>
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "solve.h"
 #include "common.h"
+
+double get_time_rem(int tests_completed, int tests_n, clock_t start, clock_t cur_time)
+{
+    if (!tests_completed)
+        return -1;
+    double time_rem = (cur_time - start);
+    time_rem /= CLOCKS_PER_SEC;
+    time_rem *= (double) (tests_n - tests_completed) / tests_completed;
+    return time_rem;
+}
 
 int run_tests(int tests_n)
 {
     assert(tests_n > 0);
 
     int tests_failed = 0;
-    for(;tests_n;tests_n--)
+    clock_t start = clock();
+    for(int i = 0;i < tests_n;i++)
     {
-        if (FLAGS.PRINT_TESTS_REM && !(tests_n % PRINT_TESTS_REM_FREQ))
+        if (FLAGS.PRINT_TESTS_REM && !(i % PRINT_TESTS_REM_FREQ))
         {
-            printf("Осталось  %d тест(а, ов).\n", tests_n);
+            printf(
+                    "Осталось  %9d тест(а, ов).\tЭто ~ %-7.3f секунд\n",
+                    tests_n - i, get_time_rem(i, tests_n, start, clock())
+                  );
             fflush(stdout);
         }
+
         sParams params = {.0, .0, .0};
         sSolution ref_solution = {0, .0, .0};
         gen_test(&params, &ref_solution);
@@ -144,22 +159,15 @@ void gen_test_2_roots(sParams* params, sSolution *solution)
 
     double x1 = random_ab(-TEST_RANGE, TEST_RANGE);
     double x2 = random_ab(-TEST_RANGE, TEST_RANGE);
-    while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0)) //FIXME (#2#): без циклов
-        x2 = random_ab(-TEST_RANGE, TEST_RANGE); // Взять типа 100 EPS?
+    while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0))
+        x2 = random_ab(-TEST_RANGE, TEST_RANGE);
 
     if (x1 > x2)
         my_swap(&x1, &x2);
 
-    /*if(cmp_double(x1, x2)) printf("1\n");
-    if(cmp_double((x1 + x2), 0)) printf("2\n");*/
-    while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0)) //FIXME (#2#): без циклов
-        x2 = random_ab(x1 + EPS, TEST_RANGE);
 
     double a = .0, b = .0, c = .0;
-    int i = 0;
     do {
-        i++;
-        printf("%d\n", i);
         b = random_ab_nz(-TEST_RANGE, TEST_RANGE);
         a = -b / (x1+x2);
         c = -b * x1 / (x1+x2) * x2;
