@@ -1,4 +1,4 @@
-#include "io.h"
+#include "include/io.h"
 
 #include <assert.h>
 #include <math.h>
@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "common.h"
+#include "include/common.h"
 
 int find_flags(int argc, char *argv[])
 {

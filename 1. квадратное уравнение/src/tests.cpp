@@ -1,12 +1,12 @@
-#include "tests.h"
+#include "include/tests.h"
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-#include "solve.h"
-#include "common.h"
+#include "include/solve.h"
+#include "include/common.h"
 
 double get_time_rem(int tests_completed, int tests_n, clock_t start, clock_t cur_time)
 {
@@ -48,7 +48,8 @@ int run_tests(int tests_n)
             tests_failed++;
     }
 
-    printf("Осталось 0 тестов.\n");
+    if (FLAGS.PRINT_TESTS_REM)
+        printf("Осталось 0 тестов.\n");
 
     fflush(stderr);
 

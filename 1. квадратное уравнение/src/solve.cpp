@@ -1,11 +1,11 @@
-#include "solve.h"
+#include "include/solve.h"
 
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "common.h"
+#include "include/common.h"
 
 void solve_general(const sParams* params, sSolution *solution)
 {
@@ -68,7 +68,7 @@ void solve_deg2(const sParams* params, sSolution *solution)
 
     double D = b * b - 4 * a * c;
 
-    if (cmp_double(D, .0)) // TODO (#1#): для 0 макрос?
+    if (cmp_double(D, .0)) // TODO (#1#): для 0 макрос? cmp_double *\( *.*, *0 *\)
         *solution = {1, -b / (2 * a), .0};
     else if (D < 0)
         *solution = {0, .0, .0};
@@ -102,6 +102,5 @@ void solve_deg0(const sParams* params, sSolution *solution)
     assert(cmp_double(params->a, .0));
     assert(cmp_double(params->b, .0));
 
-    //TODO (#1#) - это возможно только  на c++  ?
     *solution =  (!cmp_double(params->c, .0)) ? (sSolution){0, .0, .0} : (sSolution){INFTY, .0, .0};
 }

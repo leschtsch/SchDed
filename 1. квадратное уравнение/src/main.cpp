@@ -15,8 +15,6 @@
  * @brief первый и единственный файл
  */
 
-//TODO (#1#): проверить раздельную компиляцию
-//TODO (#2#): makefile
 //TODO (#3#): норм ридми + англ(необ)?
 //TODO (#4#): норм флаги - либо без чисел в аргументах либо вообще страшный парсинг жестб
 // например до -s числа это ошибка   getopt??
@@ -32,10 +30,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "tests.h"
-#include "solve.h"
-#include "io.h"
-#include "common.h"
+#include "include/tests.h"
+#include "include/solve.h"
+#include "include/io.h"
+#include "include/common.h"
 
 int TESTS_N = (int) 2e7;
 int PRINT_TESTS_REM_FREQ = 1;
