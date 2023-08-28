@@ -20,6 +20,7 @@ double get_time_rem(int tests_completed, int tests_n, clock_t start, clock_t cur
     return time_rem;
 }
 
+//TODO: запустить 1e9 тестов
 int run_tests(int tests_n)
 {
     assert(tests_n > 0);
@@ -63,7 +64,7 @@ void gen_test(sParams* params, sSolution *solution)
     assert(params);
     assert(solution);
 
-    void (*test_cases[])(sParams *, sSolution *)= {
+    void (*test_cases[])(sParams *, sSolution *) = {
                         *gen_test_0_roots_deg0,
                         *gen_test_0_roots_deg2,
                         *gen_test_1_root_deg1,
@@ -72,6 +73,7 @@ void gen_test(sParams* params, sSolution *solution)
                         *gen_test_deg2_no_D,
                         *gen_test_INFTY_roots,
                         };
+
     int cases_n = sizeof test_cases / sizeof test_cases[0];
 
     (*test_cases[rand() % (cases_n)])(params, solution);
@@ -168,7 +170,7 @@ void gen_test_2_roots(sParams* params, sSolution *solution)
 
     double x1 = random_ab(-TEST_RANGE, TEST_RANGE);
     double x2 = random_ab(-TEST_RANGE, TEST_RANGE);
-    while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0)) //TODO какая-то тонкая настройка, не трогать
+    while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0)) // какая-то тонкая настройка, не трогать
         x2 = random_ab(-TEST_RANGE, TEST_RANGE);
 
     if (x1 > x2)

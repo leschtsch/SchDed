@@ -31,11 +31,11 @@ void solve_deg2(const sParams* params, sSolution *solution)
     double b = params->b;
     double c = params->c;
 
-    int bc = 2 * (!cmp_double(b, 0)) + !cmp_double(c, 0);
+    int bc = ((!cmp_double(b, 0)) << 1) + !cmp_double(c, 0);
 
     switch(bc)
     {
-    case 0b00:
+    case 0b00: //TODO(#1#): скобки везде
         *solution = {1, .0, .0};
         return;
 
@@ -60,13 +60,15 @@ void solve_deg2(const sParams* params, sSolution *solution)
 
         return;
 
-    default:
-        break;
+        default:
+        {
+            break;
+        }
     }
 
     double D = b * b - 4 * a * c;
 
-    if (cmp_double(D, .0))
+    if (cmp_double(D, .0)) // TODO (#1#): для 0 макрос?
         *solution = {1, -b / (2 * a), .0};
     else if (D < 0)
         *solution = {0, .0, .0};
@@ -100,5 +102,6 @@ void solve_deg0(const sParams* params, sSolution *solution)
     assert(cmp_double(params->a, .0));
     assert(cmp_double(params->b, .0));
 
+    //TODO (#1#) - это возможно только  на c++  ?
     *solution =  (!cmp_double(params->c, .0)) ? (sSolution){0, .0, .0} : (sSolution){INFTY, .0, .0};
 }

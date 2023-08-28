@@ -55,7 +55,7 @@ int input(int argc, char *argv[], sParams* params)
     return OK;
 }
 
-int input_cl(int argc, char *argv[], sParams* params)
+int input_cl(int argc, char *argv[], sParams* params) //tODO - cli
 {
     assert(argc > 0);
     assert(argv);

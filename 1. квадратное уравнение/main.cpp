@@ -15,6 +15,16 @@
  * @brief первый и единственный файл
  */
 
+//TODO (#1#): проверить раздельную компиляцию
+//TODO (#2#): makefile
+//TODO (#3#): норм ридми + англ(необ)?
+//TODO (#4#): норм флаги - либо без чисел в аргументах либо вообще страшный парсинг жестб
+// например до -s числа это ошибка   getopt??
+// какой-то гайд?
+// TODO: хедер конфига
+
+//  что это, как собрать, как юзать
+
 #include "TXLib.h"
 
 #include <assert.h>
@@ -55,7 +65,7 @@ const char HELP_MSG[] = "Некоторые флаги отключают дру
  */
 int main(int argc, char *argv[])
 {
-    int input_res = find_flags(argc, argv);
+    int input_res = find_flags(argc, argv); //TODO: указ на структуру которая хранит config
 
     if (input_res)
     {
