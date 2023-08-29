@@ -170,8 +170,8 @@ void fix_zero(sSolution *solution)
     assert(solution);
     assert(solution->x1 < solution->x2 || solution->rnum < 2);
 
-    if (cmp_double(solution->x1, .0))
+    if (is_zero(solution->x1))
         solution->x1 = .0;
-    if (cmp_double(solution->x2, .0))
+    if (is_zero(solution->x2))
         solution->x2 = .0;
 }

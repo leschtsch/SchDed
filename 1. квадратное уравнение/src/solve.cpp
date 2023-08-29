@@ -29,7 +29,7 @@ void solve_deg2(const sParams* params, sSolution *solution)
     assert(params);
     assert(solution);
 
-    assert(!cmp_double(params->a, .0));
+    assert(!is_zero(params->a));
 
     double a = params->a;
     double b = params->b;
@@ -72,7 +72,7 @@ void solve_deg2(const sParams* params, sSolution *solution)
 
     double D = b * b - 4 * a * c;
 
-    if (cmp_double(D, .0)) // TODO: для 0 макрос? cmp_double *(\([^,)]*\), *0 *)
+    if (is_zero(D)) // TODO: для 0 макрос? cmp_double *(\([^,)]*\), *0 *)
         *solution = {1, -b / (2 * a), .0};
     else if (D < 0)
         *solution = {0, .0, .0};
@@ -90,8 +90,8 @@ void solve_deg1(const sParams* params, sSolution *solution)
     assert(params);
     assert(solution);
 
-    assert(cmp_double(params->a, .0));
-    assert(!cmp_double(params->b, .0));
+    assert(is_zero(params->a));
+    assert(!is_zero(params->b));
 
     double b = params->b;
     double c = params->c;
@@ -103,8 +103,8 @@ void solve_deg0(const sParams* params, sSolution *solution)
     assert(params);
     assert(solution);
 
-    assert(cmp_double(params->a, .0));
-    assert(cmp_double(params->b, .0));
+    assert(is_zero(params->a));
+    assert(is_zero(params->b));
 
-    *solution =  (!cmp_double(params->c, .0)) ? (sSolution){0, .0, .0} : (sSolution){INFTY, .0, .0};
+    *solution =  (!is_zero(params->c)) ? (sSolution){0, .0, .0} : (sSolution){INFTY, .0, .0};
 }

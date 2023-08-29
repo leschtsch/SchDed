@@ -9,7 +9,8 @@
 #include <math.h>
 
 #define EPS 1e-6  ///<  точность double и просто маленькое значение
-#define is_zero(a) (fabs((a)) < EPS)
+#define is_zero(a) (fabs((a)) < EPS) ///< @brief частный и частый случай is_zero(a);
+                                     ///< @see cmp_double
 
 /**
  * @brief структура для записи решения
@@ -97,7 +98,7 @@ extern sFlags FLAGS;                ///< глобальные флаги
  *
  * @param [in] a первое число
  * @param [in] b второе число
- * @return -1, 0, 1 если а <, ==, > b
+ * @return 1, если a = b, иначе 0
  *
  * @see EPS
  */
@@ -108,9 +109,7 @@ int cmp_double(double a, double b);
  *
  * @param [in] a указатель на первую структуру
  * @param [in] b указатель на вторую структуру
- * @return 0, если структуры одинаковы,
- * -1 если первый различный элемент в них в первой
- * структуре меньше, 1 иначе.
+ * @return 1, если a = b, иначе 0
  */
 int cmp_sSolution(const sSolution *a, const sSolution *b);
 

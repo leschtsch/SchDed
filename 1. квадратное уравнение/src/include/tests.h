@@ -38,7 +38,7 @@ int run_tests(int tests_n);
  * выбирает один из вариантов
  *
  * @param [out] params указатель на структуру для записи параметров
- * @param [out] params указатель на структуру для записи ответов
+ * @param [out] solution указатель на структуру для записи ответов
  */
 void gen_test(sParams* params, sSolution *solution);
 
@@ -55,7 +55,7 @@ int run_test(const sParams* params, const sSolution *ref_solution);
  * @brief тест: случай с 0 корней и a = b = 0
  *
  * @param [out] params указатель на структуру для записи параметров
- * @param [out] params указатель на структуру для записи ответов
+ * @param [out] solution указатель на структуру для записи ответов
  */
 void gen_test_0_roots_deg0(sParams* params, sSolution *solution);
 
@@ -63,7 +63,7 @@ void gen_test_0_roots_deg0(sParams* params, sSolution *solution);
  * @brief тест: случай с 0 корней и a != 0
  *
  * @param [out] params указатель на структуру для записи параметров
- * @param [out] params указатель на структуру для записи ответов
+ * @param [out] solution указатель на структуру для записи ответов
  */
 void gen_test_0_roots_deg2(sParams* params, sSolution *solution);
 
@@ -71,7 +71,7 @@ void gen_test_0_roots_deg2(sParams* params, sSolution *solution);
  * @brief тест: случай с 1 корнем и a = 0, b != 0
  *
  * @param [out] params указатель на структуру для записи параметров
- * @param [out] params указатель на структуру для записи ответов
+ * @param [out] solution указатель на структуру для записи ответов
  */
 void gen_test_1_root_deg1(sParams* params, sSolution *solution);
 
@@ -79,7 +79,7 @@ void gen_test_1_root_deg1(sParams* params, sSolution *solution);
  * @brief тест: случай с 1 корнем и a != 0
  *
  * @param [out] params указатель на структуру для записи параметров
- * @param [out] params указатель на структуру для записи ответов
+ * @param [out] solution указатель на структуру для записи ответов
  */
 void gen_test_1_root_deg2(sParams* params, sSolution *solution);
 
@@ -92,7 +92,7 @@ void gen_test_1_root_deg2(sParams* params, sSolution *solution);
  * крайне мало.
  *
  * @param [out] params указатель на структуру для записи параметров
- * @param [out] params указатель на структуру для записи ответов
+ * @param [out] solution указатель на структуру для записи ответов
  */
 void gen_test_2_roots(sParams* params, sSolution *solution);
 
@@ -100,7 +100,7 @@ void gen_test_2_roots(sParams* params, sSolution *solution);
  * @brief тест: случаи с 2 корнями и a != 0, которые решается без дискриминанта
  *
  * @param [out] params указатель на структуру для записи параметров
- * @param [out] params указатель на структуру для записи ответов
+ * @param [out] solution указатель на структуру для записи ответов
  */
 void gen_test_deg2_no_D(sParams* params, sSolution *solution);
 
@@ -108,7 +108,7 @@ void gen_test_deg2_no_D(sParams* params, sSolution *solution);
  * @brief тест: случай с бесконечностью корней
  *
  * @param [out] params указатель на структуру для записи параметров
- * @param [out] params указатель на структуру для записи ответов
+ * @param [out] solution указатель на структуру для записи ответов
  */
 void gen_test_INFTY_roots(sParams* params, sSolution *solution);
 
