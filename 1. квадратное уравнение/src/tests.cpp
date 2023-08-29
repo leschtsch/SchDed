@@ -1,3 +1,7 @@
+/**
+ * @file tests.cpp
+ */
+
 #include "include/tests.h"
 
 #include <assert.h>
@@ -20,7 +24,6 @@ double get_time_rem(int tests_completed, int tests_n, clock_t start, clock_t cur
     return time_rem;
 }
 
-//TODO: запустить 1e9 тестов
 int run_tests(int tests_n)
 {
     assert(tests_n > 0);
@@ -183,7 +186,7 @@ void gen_test_2_roots(sParams* params, sSolution *solution)
         b = random_ab_nz(-TEST_RANGE, TEST_RANGE);
         a = -b / (x1+x2);
         c = -b * x1 / (x1+x2) * x2;
-    } while (cmp_double(b * b - 4 * a * c, 0));
+    } while (is_zero(b * b - 4 * a * c));
     /*
      * 1.   x1 + x2 = -b / a         =>
      *      a = -b / (x1 + x2)

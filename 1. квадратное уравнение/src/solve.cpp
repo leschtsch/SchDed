@@ -1,3 +1,7 @@
+/**
+ * @file solve.cpp
+ */
+
 #include "include/solve.h"
 
 #include <assert.h>
@@ -12,9 +16,9 @@ void solve_general(const sParams* params, sSolution *solution)
     assert(params);
     assert(solution);
 
-    if (!cmp_double(params->a, 0))
+    if (!is_zero(params->a))
         solve_deg2(params, solution);
-    else if (!cmp_double(params->b, 0))
+    else if (!is_zero(params->b))
         solve_deg1(params, solution);
     else
         solve_deg0(params, solution);
@@ -31,11 +35,11 @@ void solve_deg2(const sParams* params, sSolution *solution)
     double b = params->b;
     double c = params->c;
 
-    int bc = ((!cmp_double(b, 0)) << 1) + !cmp_double(c, 0);
+    int bc = ((!is_zero(b)) << 1) + !is_zero(c);
 
     switch(bc)
     {
-    case 0b00: //TODO(#1#): скобки везде
+    case 0b00: //TODO: скобки везде
         *solution = {1, .0, .0};
         return;
 
@@ -68,7 +72,7 @@ void solve_deg2(const sParams* params, sSolution *solution)
 
     double D = b * b - 4 * a * c;
 
-    if (cmp_double(D, .0)) // TODO (#1#): для 0 макрос? cmp_double *\( *.*, *0 *\)
+    if (cmp_double(D, .0)) // TODO: для 0 макрос? cmp_double *(\([^,)]*\), *0 *)
         *solution = {1, -b / (2 * a), .0};
     else if (D < 0)
         *solution = {0, .0, .0};

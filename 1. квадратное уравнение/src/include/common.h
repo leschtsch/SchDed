@@ -6,6 +6,11 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <math.h>
+
+#define EPS 1e-6  ///<  точность double и просто маленькое значение
+#define is_zero(a) (fabs((a)) < EPS)
+
 /**
  * @brief структура для записи решения
  *
@@ -59,7 +64,6 @@ typedef struct
 } sFlags;
 
 const int INFTY = -1;           ///< значение для бесконечности корней
-const double EPS = 1e-6;        ///<  точность double и просто маленькое значение
 
 const double TEST_RANGE = 1e3;  /**<
                                  * @brief некоторый разброс для теста

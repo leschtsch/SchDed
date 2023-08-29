@@ -1,3 +1,7 @@
+/**
+ * @file common.cpp
+ */
+
 #include "include/common.h"
 
 #include <assert.h>
@@ -36,14 +40,14 @@ double random_ab(double a, double b)
 
 double random_ab_nz(double a, double b)
 {
-    assert (!cmp_double(a, 0) || !cmp_double(b, 0));
+    assert (!is_zero(a) || !is_zero(b));
     assert(a <= b);
 
     if (cmp_double(a,b))
         return a;
-    if (cmp_double(a, 0))
+    if (is_zero(a))
         return random_ab(EPS, b);
-    if (cmp_double(b, 0))
+    if (is_zero(b))
         return random_ab(a, -EPS);
 
     if(a > 0 || b < 0)
@@ -59,7 +63,7 @@ double random_ab_nz(double a, double b)
 
     double res = random_ab(a, b);
 
-    return (cmp_double(res, 0)) ? res - EPS : res; //ну будет слегка кринж с распределением, ок
+    return (is_zero(res)) ? res - EPS : res; //ну будет слегка кринж с распределением, ок
     /*
      * Без разницы, + или - EPS, так как случай,
      * когда одна из границ 0 разобран
