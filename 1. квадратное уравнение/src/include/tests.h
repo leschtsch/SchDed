@@ -25,12 +25,15 @@ double get_time_rem(int tests_completed, int tests_n, clock_t start, clock_t cur
 /**
  * @brief запускает случайные тесты
  *
- * @param [in] tests_n кол-во тестов
+ * @param [in] tests_n          кол-во тестов
+ * @param [in] tracking_freq    как часто выводить прогресс по тестам.
+ *                              если 0 - никогда
+ *
  * @return кол-во проваленных тестов
  *
- * @see TESTS_N
+ * @see TESTS_N, PRINT_TESTS_REM_FREQ
  */
-int run_tests(int tests_n);
+int run_tests(int tests_n, int tracking_freq);
 
 /**
  * @brief генерирут тестовый случай

@@ -10,6 +10,21 @@
 
 #include "include/argparse.h"
 #include "include/common.h"
+#include "include/config.h"
+
+const char HELP_MSG[] = "Некоторые опции отключают другие. Чтобы включить "
+                        "опцию обратно, нужно написать эту опцию после "
+                        "отключения. По умолчанию включена -s.\n\n"
+                        "Разрешенные опции:\n"
+                        "\t-t[num] --run-tests[num] запускает num тестов. Если num отсутствует, "
+                        "или <= 0, запускается кол-во тестов"
+                        "по умолчанию. Отключает решение уравнения.\n"
+                        "\t-p[num] --track_progress[num] Если производятся тесты, каждые num тестов "
+                        "будет выводится, сколько тестов осталось "
+                        "Если num отсутствует или <= 0, выводистя каждый тест.\n"
+                        "\t-s[a,b,c] --solve-equation[a,b,c] Решает уравнение ax^2 + bx + c = 0. "
+                        "Если параметры не указаны, они читаются из stdin.\n"
+                        "\t-h, --help Выводит помощь. Завершает программу\n\n"; ///< Выводится при -h
 
 int argparse(int argc, char *argv[], sOptions *options)
 {
@@ -37,11 +52,8 @@ int argparse(int argc, char *argv[], sOptions *options)
         {
             case 'h':
             {
-                options->run_tests = 0;
-                options->tests_tracking_freq = 0;
-                options->solve_equation = 0;
-                options->AAA_HELP_ME_PLEASE_I_AM_GONNA_DIE = 1;
-                break;
+                printf("%s\n", HELP_MSG);
+                return HELP_ASKED;
             }
 
             case 't':
@@ -53,7 +65,7 @@ int argparse(int argc, char *argv[], sOptions *options)
                 else
                     options->run_tests = TESTS_N;
 
-                options->solve_equation = 0;
+                options->solve_equation = NO_SOLVE;
                 break;
             }
 
@@ -72,16 +84,17 @@ int argparse(int argc, char *argv[], sOptions *options)
 
             case 's':
             {
-                options->solve_equation = 1;
-                options->equation_params = {1, 2, 3};
-                break; //TODO: доделать
+                options->solve_equation = INPUT_PARAMS;
 
                 if (!optarg)
                     break;
 
-                int parse_res  = 0;
+                int parse_res = 0;
                 if ((parse_res = parse_params(optarg, &options->equation_params)))
                     return parse_res;
+
+                options->solve_equation = CLI_PARAMS;
+                break;
             }
 
             default:
@@ -97,7 +110,10 @@ int argparse(int argc, char *argv[], sOptions *options)
 int parse_params(const char * arg, sParams *params)
 {
     assert(params);
-    *params = {.0, .0, .0}; //TODO сделать
+    assert(arg);
+
+    if (sscanf(arg, "%lf,%lf,%lf", &params->a, &params->b, &params->c) < 3)
+        return ERR_CLI_BAD_ARG;
 
     return OK;
 }

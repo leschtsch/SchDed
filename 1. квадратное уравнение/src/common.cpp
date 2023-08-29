@@ -120,15 +120,8 @@ void process_error(int err_code)
             break;
         }
 
-        case ERR_CLI_TOO_FEW_NUM:
+        case HELP_ASKED:
         {
-            printf("Недостаточно чисел в командной строке.\n");
-            break;
-        }
-
-        case ERR_CLI_TOO_MANY_NUM:
-        {
-            printf("Слишком много чисел в командной строке.\n");
             break;
         }
 

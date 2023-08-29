@@ -12,6 +12,7 @@
 
 #include "include/solve.h"
 #include "include/common.h"
+#include "include/config.h"
 
 double get_time_rem(int tests_completed, int tests_n, clock_t start, clock_t cur_time)
 {
@@ -25,7 +26,7 @@ double get_time_rem(int tests_completed, int tests_n, clock_t start, clock_t cur
     return time_rem;
 }
 
-int run_tests(int tests_n)
+int run_tests(int tests_n, int tracking_freq)
 {
     assert(tests_n > 0);
 
@@ -34,7 +35,7 @@ int run_tests(int tests_n)
 
     for(int i = 0;i < tests_n;i++)
     {
-        if (FLAGS.PRINT_TESTS_REM && !(i % PRINT_TESTS_REM_FREQ))
+        if (tracking_freq && !(i % tracking_freq))
         {
             printf(
                     "Осталось  %9d тест(а, ов).\tЭто ~ %-7.3f секунд\n",
@@ -52,13 +53,15 @@ int run_tests(int tests_n)
             tests_failed++;
     }
 
-    if (FLAGS.PRINT_TESTS_REM)
+    if (tracking_freq)
         printf("Осталось 0 тестов.\n");
 
     fflush(stderr);
 
-    printf("тестов провалено: %d / %d, доля ошибок: %f\n",
-           tests_failed, TESTS_N, (double) tests_failed / TESTS_N
+    printf("Тестов провалено: %d / %d, доля ошибок: %f.\n"
+           "Время выполнения: %f.\n",
+           tests_failed, tests_n, (double) tests_failed / tests_n,
+           (double) (clock() - start) / CLOCKS_PER_SEC
            );
 
     return tests_failed;
