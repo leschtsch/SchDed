@@ -30,7 +30,7 @@
  *
  * @see errors, sFlags
  */
-int process_flag(const char * arg);
+int process_flag(const char * arg);//TODO: не забыть делитнуть
 
 /**
  * @brief поиск флагов командной строки
@@ -43,7 +43,7 @@ int process_flag(const char * arg);
  *
  * @see errors, sFlags, process_flag
  */
-int find_flags(int argc, char *argv[]);
+int find_flags(int argc, char *argv[]);//TODO: не забыть делитнуть
 
 /**
  * @brief считывает аргументы командной строки
@@ -56,7 +56,7 @@ int find_flags(int argc, char *argv[]);
  *
  * @see errors
  */
-int input_cl(int argc, char *argv[], sParams* params);
+int input_cl(int argc, char *argv[], sParams* params);//TODO: не забыть делитнуть
 
 /**
  * @brief Считывает параметры уравнения и флаги
@@ -72,7 +72,7 @@ int input_cl(int argc, char *argv[], sParams* params);
  *
  * @see errors, process_flag
  */
-int input(int argc, char *argv[], sParams* params);
+int input(int argc, char *argv[], sParams* params);//TODO: не забыть переделать
 
 /**
  * @brief поправляет -0

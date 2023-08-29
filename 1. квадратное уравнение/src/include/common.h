@@ -1,6 +1,6 @@
 /**
  * @file common.h
- * @brief общие функции
+ * @brief общие функции и прочее
  */
 
 #ifndef COMMON_H
@@ -39,15 +39,11 @@ typedef struct
 
 /**
  * @brief enum возможных внутренних кодов возврата
- *
- * Я также хотел различать ошибки ввода, но
- * это слишком сложно чрез один лишь scanf.
- * Не захотел ради этого усложнять код.
  */
 enum errors
 {
     OK,                 ///< ошибки нет
-    ERR_BAD_INPUT,      ///< ошибка ввода, см полное описание
+    ERR_BAD_INPUT,      ///< ошибка ввода
     ERR_CLI_BAD_ARG,     ///< неизвестный агрумент командной строки
     ERR_CLI_TOO_FEW_NUM,    ///< мало чисел в командной строке
     ERR_CLI_TOO_MANY_NUM,    ///< слишком много в командной строке
@@ -89,6 +85,7 @@ const double ROOTS_0_PROB = 1e-2;    /**<
                                  * @see gen_test_1_root_deg1, gen_test_2_roots
                                  */
 
+//TODO: не забыть делитнуть
 extern int TESTS_N;                 ///< кол-во тестов по умолчанию
 extern int PRINT_TESTS_REM_FREQ;    ///< как часто выводить кол-во оставшихся тестов
 extern sFlags FLAGS;                ///< глобальные флаги

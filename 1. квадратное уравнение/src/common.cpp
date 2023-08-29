@@ -1,5 +1,6 @@
 /**
  * @file common.cpp
+ * @brief общие функции и прочее
  */
 
 #include "include/common.h"
@@ -99,30 +100,42 @@ void process_error(int err_code)
 {
     switch (err_code)
     {
-    case OK:
-        printf("process_error(OK): OK.\n");
-        break;
+        case OK:
+        {
+            printf("process_error(OK): OK.\n");
+            break;
+        }
 
-    case ERR_BAD_INPUT:
-        printf("Аргументы введены неверно / ошибка ввода.\n");
-        break;
+        case ERR_BAD_INPUT:
+        {
+            printf("Аргументы введены неверно / ошибка ввода.\n");
+            break;
+        }
 
-    case ERR_CLI_BAD_ARG:
-        printf("Неизвестный аргумент (флаг) командной строки.\n"
-               "Помощь: --help, -h\n"
-        );
-        break;
+        case ERR_CLI_BAD_ARG:
+        {
+            printf("Неизвестный аргумент (флаг) командной строки.\n"
+                   "Помощь: --help, -h\n"
+            );
+            break;
+        }
 
-    case ERR_CLI_TOO_FEW_NUM:
-        printf("Недостаточно чисел в командной строке.\n");
-        break;
+        case ERR_CLI_TOO_FEW_NUM:
+        {
+            printf("Недостаточно чисел в командной строке.\n");
+            break;
+        }
 
-    case ERR_CLI_TOO_MANY_NUM:
-        printf("Слишком много чисел в командной строке.\n");
-        break;
+        case ERR_CLI_TOO_MANY_NUM:
+        {
+            printf("Слишком много чисел в командной строке.\n");
+            break;
+        }
 
-    default:
-        fprintf(stderr, "\nERROR: process_error(): unknown error %d.\n", err_code);
-        break;
+        default:
+        {
+            fprintf(stderr, "\nERROR: process_error(): unknown error %d.\n", err_code);
+            break;
+        }
     }
 }

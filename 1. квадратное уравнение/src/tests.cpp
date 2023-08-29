@@ -1,5 +1,6 @@
 /**
  * @file tests.cpp
+ * @brief функци тестов
  */
 
 #include "include/tests.h"
@@ -209,55 +210,61 @@ void gen_test_deg2_no_D(sParams* params, sSolution *solution)
 
     switch (rand() % 3)
     {
-    case 0b00: // b и с - 0, 0
-        *params = {random_ab_nz(-TEST_RANGE, TEST_RANGE), .0, .0};
-        *solution = {1, .0, .0};
-        return;
-
-    case 0b01: // b и с - 0, !0
-        if (rand() % 2)
+        case 0b00: // b и с - 0, 0
         {
-            double x = random_ab_nz(0, TEST_RANGE);
-
-            double a = 0, c = 0, cx = 0;
-
-            cx = random_ab_nz(-TEST_RANGE, TEST_RANGE);
-            c = cx * x;
-            a = -cx / x;
-
-            *params = {a, .0, c};
-            * solution = {2, -x, x};
+            *params = {random_ab_nz(-TEST_RANGE, TEST_RANGE), .0, .0};
+            *solution = {1, .0, .0};
+            return;
         }
-        else
+
+        case 0b01: // b и с - 0, !0
         {
-            double a = random_ab_nz(-TEST_RANGE, TEST_RANGE);
-            int sign = (a < 0) ? -1 : 1;
-            double c = sign * random_ab_nz(0, TEST_RANGE);
+            if (rand() % 2)
+            {
+                double x = random_ab_nz(0, TEST_RANGE);
 
-            *params = {a, .0, c};
-            *solution = {0, .0, .0};
+                double a = 0, c = 0, cx = 0;
+
+                cx = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+                c = cx * x;
+                a = -cx / x;
+
+                *params = {a, .0, c};
+                * solution = {2, -x, x};
+            }
+            else
+            {
+                double a = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+                int sign = (a < 0) ? -1 : 1;
+                double c = sign * random_ab_nz(0, TEST_RANGE);
+
+                *params = {a, .0, c};
+                *solution = {0, .0, .0};
+            }
+            return;
         }
-        return;
 
-    case 0b10: // b и с - !0, 0
-    {
-        double x2 = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+        case 0b10: // b и с - !0, 0
+        {
+            double x2 = random_ab_nz(-TEST_RANGE, TEST_RANGE);
 
-        double b = random_ab_nz(-TEST_RANGE, TEST_RANGE);
-        double a = -b  / x2;
+            double b = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+            double a = -b  / x2;
 
-        *params = {a, b, .0};
-        *solution = {2, .0, x2};
+            *params = {a, b, .0};
+            *solution = {2, .0, x2};
 
-        if (x2 < 0)
-            my_swap(&solution->x1, &solution->x2);
+            if (x2 < 0)
+                my_swap(&solution->x1, &solution->x2);
 
-        return;
-    }
+            return;
+        }
 
-    default:
-        fprintf(stderr, "\nERROR(): gen_test_2_roots_no_D(): unknown case\n");
-        return;
+        default:
+        {
+            fprintf(stderr, "\nERROR(): gen_test_2_roots_no_D(): unknown case\n");
+            return;
+        }
     }
 }
 

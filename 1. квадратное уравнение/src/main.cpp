@@ -29,22 +29,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "include/io.h"
+#include "include/argparse.h"
 #include "include/tests.h"
 #include "include/solve.h"
-#include "include/io.h"
 #include "include/common.h"
 
-int TESTS_N = (int) 2e7;
-int PRINT_TESTS_REM_FREQ = 1;
+int TESTS_N = (int) 2e7;  //TODO: не забыть делитнуть
+int PRINT_TESTS_REM_FREQ = 1; //TODO: не забыть делитнуть
 
 sFlags FLAGS = {
                 .RUN_TESTS = 0,
                 .SOLVE_EQUATION = 1,
                 .PRINT_HELP = 0,
                 .PRINT_TESTS_REM  = 0,
-               };
+               }; //TODO: не забыть делитнуть
 
-const char HELP_MSG[] = "Некоторые флаги отключают другие. Чтобы включить "
+const char HELP_MSG[] = "Некоторые флаги отключают другие. Чтобы включить " //TODO: в хедер или в argparse
                         "флаг обратно, нужно написать этот флаг после "
                         "отключения. По умолчанию включен -s.\n \n"
                         "Разрешенные флаги:\n"
@@ -62,6 +63,20 @@ const char HELP_MSG[] = "Некоторые флаги отключают дру
  */
 int main(int argc, char *argv[])
 {
+    sOptions options = {
+                        .run_tests = 0,
+                        .tests_tracking_freq = 0,
+                        .solve_equation = 1,
+                        .equation_params = {0, 0, 0},
+                     };
+
+    int parsing_res = argparse(argc, argv, &options);
+
+    if (parsing_res)
+        process_error(parsing_res);
+
+    return parsing_res;
+
     int input_res = find_flags(argc, argv); //TODO: указ на структуру которая хранит config
 
     if (input_res)

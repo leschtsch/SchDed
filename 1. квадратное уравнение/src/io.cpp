@@ -1,5 +1,6 @@
 /**
  * @file io.cpp
+ * @brief функци ввода-вывода
  */
 
 #include "include/io.h"
@@ -144,24 +145,37 @@ void output(sSolution *solution)
     fix_zero(solution);
 
     printf("У уравнения ");
-
     switch (solution->rnum)
     {
-    case 0:
-        printf("нет корней.\n");
-        break;
-    case 1:
-        printf("1 корень: %f.\n", solution->x1);
-        break;
-    case 2:
-        printf("2 корня: %f, %f.\n", solution->x1, solution->x2);
-        break;
-    case INFTY:
-        printf("бесконечно много корней.\n");
-        break;
-    default:
-        fprintf(stderr, "\nERROR: output(): solution.rnum == %d\n", solution->rnum);
-        break;
+        case 0:
+        {
+            printf("нет корней.\n");
+            break;
+        }
+
+        case 1:
+        {
+            printf("1 корень: %f.\n", solution->x1);
+            break;
+        }
+
+        case 2:
+        {
+            printf("2 корня: %f, %f.\n", solution->x1, solution->x2);
+            break;
+        }
+
+        case INFTY:
+        {
+            printf("бесконечно много корней.\n");
+            break;
+        }
+
+        default:
+        {
+            fprintf(stderr, "\nERROR: output(): solution.rnum == %d\n", solution->rnum);
+            break;
+        }
     }
 }
 

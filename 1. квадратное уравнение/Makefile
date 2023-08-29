@@ -6,14 +6,17 @@ INCL_DIR = ./src/include
 
 all: main.exe
 
-main.exe: $(OBJ_DIR)/main.o $(OBJ_DIR)/io.o $(OBJ_DIR)/solve.o $(OBJ_DIR)/tests.o $(OBJ_DIR)/common.o
-	g++ $(CFLAGS) $(OBJ_DIR)/main.o $(OBJ_DIR)/io.o $(OBJ_DIR)/solve.o $(OBJ_DIR)/tests.o $(OBJ_DIR)/common.o -o main.exe
+main.exe: $(OBJ_DIR)/main.o $(OBJ_DIR)/io.o $(OBJ_DIR)/argparse.o $(OBJ_DIR)/solve.o $(OBJ_DIR)/tests.o $(OBJ_DIR)/common.o
+	g++ $(CFLAGS) $(OBJ_DIR)/main.o $(OBJ_DIR)/io.o $(OBJ_DIR)/argparse.o $(OBJ_DIR)/solve.o $(OBJ_DIR)/tests.o $(OBJ_DIR)/common.o -o main.exe
 
 $(OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp $(INCL_DIR)/tests.h $(INCL_DIR)/solve.h $(INCL_DIR)/io.h $(INCL_DIR)/common.h
 	g++ $(CFLAGS) -c $(SRC_DIR)/main.cpp -o $(OBJ_DIR)/main.o
 
 $(OBJ_DIR)/io.o: $(SRC_DIR)/io.cpp $(INCL_DIR)/io.h $(INCL_DIR)/common.h
 	g++ $(CFLAGS) -c $(SRC_DIR)/io.cpp -o $(OBJ_DIR)/io.o
+
+$(OBJ_DIR)/argparse.o: $(SRC_DIR)/argparse.cpp $(INCL_DIR)/argparse.h $(INCL_DIR)/common.h
+	g++ $(CFLAGS) -c $(SRC_DIR)/argparse.cpp -o $(OBJ_DIR)/argparse.o
 
 $(OBJ_DIR)/solve.o: $(SRC_DIR)/solve.cpp  $(INCL_DIR)/solve.h $(INCL_DIR)/common.h
 	g++ $(CFLAGS) -c $(SRC_DIR)/solve.cpp -o $(OBJ_DIR)/solve.o

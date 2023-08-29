@@ -1,5 +1,6 @@
 /**
  * @file solve.cpp
+ * @brief функци, решающие уравнения
  */
 
 #include "include/solve.h"
@@ -39,30 +40,35 @@ void solve_deg2(const sParams* params, sSolution *solution)
 
     switch(bc)
     {
-    case 0b00: //TODO: скобки везде
-        *solution = {1, .0, .0};
-        return;
-
-    case 0b01:
-        if ((c < 0) == (a < 0))
+        case 0b00:
         {
-            *solution = {0, .0, .0};
+            *solution = {1, .0, .0};
             return;
         }
-        else
+
+        case 0b01:
         {
+            if ((c < 0) == (a < 0))
+            {
+                *solution = {0, .0, .0};
+                return;
+            }
+
             double sqrt_ca = sqrt(-c / a);
             *solution = {2, -sqrt_ca, sqrt_ca};
+
+            return;
         }
-        return;
 
-    case 0b10:
-        *solution = {2, 0, -b / a};
+        case 0b10:
+        {
+            *solution = {2, 0, -b / a};
 
-        if ((b < 0) == (a < 0))
-            my_swap(&solution->x1, &solution->x2);
+            if ((b < 0) == (a < 0))
+                my_swap(&solution->x1, &solution->x2);
 
-        return;
+            return;
+        }
 
         default:
         {
@@ -72,7 +78,7 @@ void solve_deg2(const sParams* params, sSolution *solution)
 
     double D = b * b - 4 * a * c;
 
-    if (is_zero(D)) // TODO: для 0 макрос? cmp_double *(\([^,)]*\), *0 *)
+    if (is_zero(D))
         *solution = {1, -b / (2 * a), .0};
     else if (D < 0)
         *solution = {0, .0, .0};
