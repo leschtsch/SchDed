@@ -19,7 +19,7 @@ int input(int argc, char *argv[], sParams* params)
     assert(argv);
     assert(params);
 
-    printf("Введите коэффициэнты - три числа:\n");
+    printf("Введите коэффициэнты - три числа через пробелы:\n");
     fflush(stdout);
 
     if (scanf("%lf %lf %lf", &params->a, &params->b, &params->c) < 3)
