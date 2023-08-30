@@ -30,7 +30,7 @@
 ### Установка и сборка программы
 1. Скачать папку `1. квадратное уравнение`.
 2. Возможно, потребуется перевети кодировку в cp1251, иначе в выводе и в документации будут кракозябры.
-3. Скачать `TXLib` [header](http://storage.ded32.net.ru/Lib/TX/TXUpdate/TXLib.h) или [установщик](https://sourceforge.net/projects/txlib/).
+3. Скачать `TXLib`: [header](http://storage.ded32.net.ru/Lib/TX/TXUpdate/TXLib.h) или [установщик](https://sourceforge.net/projects/txlib/).
 4. Запустить в этой папке `make` или `g++ ./src/*.cpp -o main.exe`.
 5. Запустить `doxygen`, если  нужна подробная документация.
 
