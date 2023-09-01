@@ -3,7 +3,7 @@
  * @brief общие функции и прочее
  */
 
-#include "include/common.h"
+#include "include/common.h" //TODO: даже здесь инклюд после стандартных
 
 #include <assert.h>
 #include <math.h>
@@ -11,29 +11,29 @@
 #include <stdlib.h>
 
 
-int cmp_double(double a, double b)
+int is_equal_double(double a, double b)//TODO: bool, is_equal
 {
     assert(isfinite(a));
     assert(isfinite(b));
-    assert(!isnan(a));
-    assert(!isnan(b));
 
     return (fabs(a - b) < EPS);
 }
 
-int cmp_sSolution(const sSolution *a, const sSolution *b)
+int is_equal_sSolution(const sSolution *a, const sSolution *b)
 {
+    assert(a);
+    assert(b);
     assert(a->x1 < a->x2 || a->rnum < 2);
     assert(b->x1 < b->x2 || b->rnum < 2);
 
-    return (a->rnum == b->rnum && cmp_double(a->x1, b->x1) && cmp_double(a->x2, b->x2));
+    return (a->rnum == b->rnum && is_equal_double(a->x1, b->x1) && is_equal_double(a->x2, b->x2));
 }
 
 double random_ab(double a, double b)
 {
     assert(a <= b);
 
-    if (cmp_double(a, b))
+    if (is_equal_double(a, b))
         return a;
 
     return (double) rand() / RAND_MAX * (b - a) + a;
@@ -44,7 +44,7 @@ double random_ab_nz(double a, double b)
     assert (!is_zero(a) || !is_zero(b));
     assert(a <= b);
 
-    if (cmp_double(a,b))
+    if (is_equal_double(a,b))
         return a;
     if (is_zero(a))
         return random_ab(EPS, b);
@@ -78,15 +78,13 @@ void my_swap (double * a, double * b)
 
     assert(isfinite(*a));
     assert(isfinite(*b));
-    assert(!isnan(*a));
-    assert(!isnan(*b));
 
     double tmp = *a;
     *a = *b;
     *b = tmp;
 }
 
-int is_number(char * s)
+int is_number(char * s)//TODO отразить строку в названии
 {
     assert(s);
 

@@ -85,7 +85,8 @@ void solve_deg2(const sParams* params, sSolution *solution)
     else
     {
         double sqrt_D = sqrt(D);
-        *solution = {2, (-b - sqrt_D) / (2 * a), (-b + sqrt_D) / (2 * a)};
+        *solution = {2, (-b - sqrt_D) / (2 * a), (-b + sqrt_D) / (2 * a)}; //TODO: разделить на строки
+        //TODO: самые большие типы сверху
         if (a < 0)
             my_swap(&solution->x1, &solution->x2);
     }

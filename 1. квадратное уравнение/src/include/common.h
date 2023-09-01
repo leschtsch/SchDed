@@ -10,7 +10,7 @@
 
 #define EPS 1e-6  ///<  точность double и просто маленькое значение
 #define is_zero(a) (fabs((a)) < EPS) ///< @brief частный и частый случай is_zero(a);
-                                     ///< @see cmp_double
+                                     ///< @see is_equal_double
 
 /**
  * @brief структура для записи решения
@@ -22,6 +22,7 @@
  */
 typedef struct
 {
+    //TODO: enum  для корней
     int rnum;  ///< количество корней
     double x1; ///< первый корень
     double x2; ///< второй корень
@@ -40,13 +41,13 @@ typedef struct
 /**
  * @brief enum возможных внутренних кодов возврата
  */
-enum errors
+typedef enum
 {
     OK,                 ///< Ошибки нет
     ERR_BAD_INPUT,      ///< Ошибка ввода
     ERR_CLI_BAD_ARG,    ///< Неизвестный агрумент командной строки.
     HELP_ASKED          ///< Пользователь запросил помощь. Не ошибка, но делать больше ничего не надо.
-};
+} errors;
 
 const int INFTY = -1;           ///< значение для бесконечности корней
 
@@ -59,7 +60,7 @@ const int INFTY = -1;           ///< значение для бесконечн�
  *
  * @see EPS
  */
-int cmp_double(double a, double b);
+int is_equal_double(double a, double b);
 
 /**
  * @brief сравнивает две структуры sSolution
@@ -68,7 +69,7 @@ int cmp_double(double a, double b);
  * @param [in] b указатель на вторую структуру
  * @return 1, если a = b, иначе 0
  */
-int cmp_sSolution(const sSolution *a, const sSolution *b);
+int is_equal_sSolution(const sSolution *a, const sSolution *b);
 
 /**
  * @brief случайное число от a до b

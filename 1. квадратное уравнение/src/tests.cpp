@@ -14,9 +14,9 @@
 #include "include/common.h"
 #include "include/config.h"
 
-double get_time_rem(int tests_completed, int tests_n, clock_t start, clock_t cur_time)
+double get_time_rem(int tests_completed, int tests_n, clock_t start, clock_t cur_time)  //TODO: время не получается, а считается
 {
-    if (!tests_completed)
+    if (!tests_completed)   //TODO: написаьт, как оценивается время
         return -1;
 
     double time_rem = (cur_time - start);
@@ -33,14 +33,14 @@ int run_tests(int tests_n, int tracking_freq)
     int tests_failed = 0;
     clock_t start = clock();
 
-    for(int i = 0;i < tests_n;i++)
+    for (int i = 0; i < tests_n; i++)
     {
         if (tracking_freq && !(i % tracking_freq))
         {
             printf(
                     "Осталось  %9d тест(а, ов).\tЭто ~ %-7.3f секунд\n",
                     tests_n - i,
-		    get_time_rem(i, tests_n, start, clock())
+                    get_time_rem(i, tests_n, start, clock())
                   );
             fflush(stdout);
         }
@@ -87,7 +87,7 @@ void gen_test(sParams* params, sSolution *solution)
     (*test_cases[rand() % (cases_n)])(params, solution);
 }
 
-void gen_test_0_roots_deg0(sParams* params, sSolution *solution)
+void gen_test_0_roots_deg0(sParams* params, sSolution *solution) //TODO ref_solution
 {
     assert(params);
     assert(solution);
@@ -178,19 +178,18 @@ void gen_test_2_roots(sParams* params, sSolution *solution)
 
     double x1 = random_ab(-TEST_RANGE, TEST_RANGE);
     double x2 = random_ab(-TEST_RANGE, TEST_RANGE);
-    while (cmp_double(x1, x2)  || cmp_double((x1 + x2), 0)) // какая-то тонкая настройка, не трогать
-        x2 = random_ab(-TEST_RANGE, TEST_RANGE);
-
+    if (is_equal_double(x1, x2)  || is_equal_double((x1 + x2), 0)) // какая-то тонкая настройка, не трогать
+    {
+        *params = {.0, .0, .0};
+        *solution = {INFTY, .0, 0};
+        return;
+    }
     if (x1 > x2)
         my_swap(&x1, &x2);
 
-
-    double a = .0, b = .0, c = .0;
-    do {
-        b = random_ab_nz(-TEST_RANGE, TEST_RANGE);
-        a = -b / (x1+x2);
-        c = -b * x1 / (x1+x2) * x2;
-    } while (is_zero(b * b - 4 * a * c));
+    double b = random_ab_nz(-TEST_RANGE, TEST_RANGE);
+    double a = -b / (x1+x2);
+    double c = -b * x1 / (x1+x2) * x2;
     /*
      * 1.   x1 + x2 = -b / a         =>
      *      a = -b / (x1 + x2)
@@ -201,6 +200,13 @@ void gen_test_2_roots(sParams* params, sSolution *solution)
      *
      * Порядок дискриминанта - TETS_RANGE^2
      */
+
+    if (is_zero(b * b - 4 * a * c))
+    {
+        *params = {.0, .0, .0};
+        *solution = {INFTY, .0, 0};
+        return;
+    }
 
     *params= (sParams){a, b, c};
     *solution = {2, x1, x2};
@@ -288,17 +294,18 @@ int run_test(const sParams* params, const sSolution *ref_solution)
     sSolution test_solution = {0, .0, .0};
     solve_general(params, &test_solution);
 
-    if (cmp_sSolution(ref_solution, &test_solution))
+    if (is_equal_sSolution(ref_solution, &test_solution))
         return 0;
 
+    double D = params->b * params->b - 4 * params->a * params->c;
     fprintf(stderr,
-                "TEST_FAILED:\n"
+                "ТЕСТ ПРОВАЛЕН:\n"
                 "\tПараметры: %.9f\t %.9f\t %.9f\n"
                 "\tДискриминант: %g\n"
                 "\tОжидаемое решение: %d\t %.9f\t %.9f\n"
                 "\tОтвет функции:     %d\t %.9f\t %.9f\n",
                 params->a, params->b, params->c,
-                params->b * params->b - 4 * params->a * params->c,
+                D,
                 ref_solution->rnum, ref_solution->x1, ref_solution->x2,
                 test_solution.rnum, test_solution.x1, test_solution.x2
                 );

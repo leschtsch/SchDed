@@ -22,7 +22,7 @@
  *
  * @see errors, process_flag
  */
-int input(int argc, char *argv[], sParams* params);
+int input_params(int argc, char *argv[], sParams* params);
 
 /**
  * @brief поправляет -0
@@ -38,12 +38,14 @@ void fix_zero(sSolution *solution);
 /**
  * @brief выводит решение
  *
- * @note меняет -0 на 0 в solution
+ * @note меняет -0 на 0 в solution, вызывая fix_zero
  *
  * Вывод должен быть красивым и удобным, что
  * субъективно. Поэтому я положился на интуицию.
  *
  * @param [in, out] solution - решение, которое надо вывести
+ *
+ * @see fix_zero
  */
 void output(sSolution *solution);
 

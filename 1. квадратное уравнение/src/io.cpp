@@ -13,7 +13,7 @@
 
 #include "include/common.h"
 
-int input(int argc, char *argv[], sParams* params)
+int input_params(int argc, char *argv[], sParams* params)//TODO: что за инпут
 {
     assert(argc > 0);
     assert(argv);
@@ -22,7 +22,7 @@ int input(int argc, char *argv[], sParams* params)
     printf("Введите коэффициэнты - три числа через пробелы:\n");
     fflush(stdout);
 
-    if (scanf("%lf %lf %lf", &params->a, &params->b, &params->c) < 3)
+    if (scanf("%lf %lf %lf", &params->a, &params->b, &params->c) != 3)
         return ERR_BAD_INPUT;
 
     return OK;
@@ -56,7 +56,7 @@ void output(sSolution *solution)
             break;
         }
 
-        case INFTY:
+        case INFTY: //TODO: INFTY не оч название
         {
             printf("бесконечно много корней.\n");
             break;

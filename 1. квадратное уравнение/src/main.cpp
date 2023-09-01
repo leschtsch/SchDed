@@ -104,8 +104,10 @@
  * @file main.cpp
  */
 
-//TODO: норм ридми + англ(необ)?
-//TODO: описание флагов
+//TODO после задачи результат в  ридми, ридми капсом
+// ридми - что это, как установить, как использовать, фичи, всякие лицензии и хонорабле ментион
+// примеров многовато
+
 // например до -s числа это ошибка   getopt??
 // какой-то гайд?
 
@@ -126,18 +128,18 @@
 #include "include/config.h"
 
 /**
- * @see input, process_error, solve_general, output
+ * @see input_params, process_error, solve_general, output
  */
-int main(int argc, char *argv[])
+int main(int argc, char *argv[])//TODO консты
 {
     sOptions options = {
-                        .run_tests = 0,
-                        .tests_tracking_freq = 0,
-                        .solve_equation = INPUT_PARAMS,
-                        .equation_params = {0, 0, 0},
-                     };
+        .run_tests = 0,
+        .tests_tracking_freq = 0,
+        .solve_equation = INPUT_PARAMS,
+        .equation_params = {0, 0, 0},
+    };
 
-    int parsing_res = argparse(argc, argv, &options);
+    int parsing_res = parse_args(argc, argv, &options);
 
     if (parsing_res)
     {
@@ -153,12 +155,12 @@ int main(int argc, char *argv[])
         int input_res = 0;
 
         if (options.solve_equation == INPUT_PARAMS)
-            input_res = input(argc, argv, &options.equation_params);
+            input_res = input_params(argc, argv, &options.equation_params);
 
         if (input_res)
         {
             process_error(input_res);
-            return -1;
+            return input_res;
         }
 
         sSolution solution = {0, .0, .0};

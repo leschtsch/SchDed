@@ -26,13 +26,12 @@ const char HELP_MSG[] = "Некоторые опции отключают дру
                         "Если параметры не указаны, они читаются из stdin.\n"
                         "\t-h --help Выводит помощь. Завершает программу.\n\n"; ///< Выводится при -h
 
-int argparse(int argc, char *argv[], sOptions *options)
+int parse_args(int argc, char *argv[], sOptions *options) //TODO: enum  а не int
 {
     assert(argv);
-
     assert(options);
 
-    char shortopts[] = "ht::p::s::";
+    char shortopts[] = "ht::p::s::";//TODO: const'ы для опций, вывод --help - отдельная функция.
     struct option longopts[] = {
                                     {"help", 0, NULL, 'h'},
                                     {"run-tests", 2, NULL, 't'},
@@ -63,9 +62,9 @@ int argparse(int argc, char *argv[], sOptions *options)
                 if (optarg && sscanf(optarg, "%d", &tmp_num) && tmp_num > 0)
                     options->run_tests = tmp_num;
                 else
-                    options->run_tests = TESTS_N;
+                    options->run_tests = TESTS_N;//TODO: TESTS_N_DEFAULT
 
-                options->solve_equation = NO_SOLVE;
+                options->solve_equation = DONT_SOLVE;
                 break;
             }
 
@@ -107,12 +106,12 @@ int argparse(int argc, char *argv[], sOptions *options)
     return OK;
 }
 
-int parse_params(const char * arg, sParams *params)
+int parse_params(const char *arg, sParams *params)
 {
     assert(params);
     assert(arg);
 
-    if (sscanf(arg, "%lf,%lf,%lf", &params->a, &params->b, &params->c) < 3)
+    if (sscanf(arg, "%lf,%lf,%lf", &params->a, &params->b, &params->c) != 3)
         return ERR_CLI_BAD_ARG;
 
     return OK;
