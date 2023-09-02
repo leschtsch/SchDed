@@ -47,7 +47,7 @@ int run_tests(int tests_n, int tracking_freq)
         }
 
         sParams params = {.0, .0, .0};
-        sSolution ref_solution = {0, .0, .0};
+        sSolution ref_solution = {.0, .0, ZERO_ROOTS};
         gen_test(&params, &ref_solution);
 
         if (run_test(&params, &ref_solution))
@@ -95,7 +95,7 @@ void gen_test_0_roots_deg0(sParams* params, sSolution *ref_solution)
 
     double c = random_ab_nz(-TEST_RANGE, TEST_RANGE);
     *params = {.0, .0, c};
-    *ref_solution = {0, .0, .0};
+    *ref_solution = {.0, .0, ZERO_ROOTS};
 }
 
 void gen_test_0_roots_deg2(sParams* params, sSolution *ref_solution)
@@ -122,7 +122,7 @@ void gen_test_0_roots_deg2(sParams* params, sSolution *ref_solution)
     double c = -y + sign * random_ab_nz(0, TEST_RANGE);
 
     *params = (sParams){a, b, c};
-    *ref_solution = {0, .0, .0};
+    *ref_solution = {.0, .0, ZERO_ROOTS};
 
 }
 
@@ -133,8 +133,12 @@ void gen_test_1_root_deg1(sParams* params, sSolution *ref_solution)
 
     if (random_ab(0,1) < ROOTS_0_PROB)
     {
-        *params  = {.0, random_ab_nz(-TEST_RANGE, TEST_RANGE), .0};
-        *ref_solution = {1, .0, .0};
+        *params  = {
+            .0,
+            random_ab_nz(-TEST_RANGE, TEST_RANGE),
+            .0
+        };
+        *ref_solution = {.0, .0, ONE_ROOT};
         return;
     }
 
@@ -142,8 +146,12 @@ void gen_test_1_root_deg1(sParams* params, sSolution *ref_solution)
 
     double c = random_ab_nz(-TEST_RANGE, TEST_RANGE);
 
-    *params = {.0, - c / x, c};
-    *ref_solution = {1, x, .0};
+    *params = {
+        .0,
+        - c / x,
+        c
+    };
+    *ref_solution = {x, .0, ONE_ROOT};
 }
 
 void gen_test_1_root_deg2(sParams* params, sSolution *ref_solution)
@@ -169,7 +177,7 @@ void gen_test_1_root_deg2(sParams* params, sSolution *ref_solution)
      */
 
     *params= (sParams){a, b, c};
-    *ref_solution = {1, x, .0};
+    *ref_solution = {x, .0, ONE_ROOT};
 }
 
 void gen_test_2_roots(sParams* params, sSolution *ref_solution)
@@ -182,7 +190,7 @@ void gen_test_2_roots(sParams* params, sSolution *ref_solution)
     if (is_equal_double(x1, x2)  || is_equal_double((x1 + x2), 0)) // какая-то тонкая настройка, не трогать
     {
         *params = {.0, .0, .0};
-        *ref_solution = {INFINITY_ROOTS, .0, 0};
+        *ref_solution = {.0, 0, INFINITY_ROOTS};
         return;
     }
     if (x1 > x2)
@@ -205,12 +213,12 @@ void gen_test_2_roots(sParams* params, sSolution *ref_solution)
     if (is_zero(b * b - 4 * a * c))
     {
         *params = {.0, .0, .0};
-        *ref_solution = {INFINITY_ROOTS, .0, 0};
+        *ref_solution = {.0, 0, INFINITY_ROOTS};
         return;
     }
 
     *params= (sParams){a, b, c};
-    *ref_solution = {2, x1, x2};
+    *ref_solution = {x1, x2, TWO_ROOTS};
 }
 
 void gen_test_deg2_no_D(sParams* params, sSolution *ref_solution)
@@ -222,8 +230,12 @@ void gen_test_deg2_no_D(sParams* params, sSolution *ref_solution)
     {
         case 0b00: // b и с - 0, 0
         {
-            *params = {random_ab_nz(-TEST_RANGE, TEST_RANGE), .0, .0};
-            *ref_solution = {1, .0, .0};
+            *params = {
+                random_ab_nz(-TEST_RANGE, TEST_RANGE),
+                .0,
+                .0
+            };
+            *ref_solution = {.0, .0, ONE_ROOT};
             return;
         }
 
@@ -240,7 +252,7 @@ void gen_test_deg2_no_D(sParams* params, sSolution *ref_solution)
                 a = -cx / x;
 
                 *params = {a, .0, c};
-                *ref_solution = {2, -x, x};
+                *ref_solution = {-x, x, TWO_ROOTS};
             }
             else
             {
@@ -249,7 +261,7 @@ void gen_test_deg2_no_D(sParams* params, sSolution *ref_solution)
                 double c = sign * random_ab_nz(0, TEST_RANGE);
 
                 *params = {a, .0, c};
-                *ref_solution = {0, .0, .0};
+                *ref_solution = {.0, .0, ZERO_ROOTS};
             }
             return;
         }
@@ -262,7 +274,7 @@ void gen_test_deg2_no_D(sParams* params, sSolution *ref_solution)
             double a = -b  / x2;
 
             *params = {a, b, .0};
-            *ref_solution = {2, .0, x2};
+            *ref_solution = {.0, x2, TWO_ROOTS};
 
             if (x2 < 0)
                 my_swap(&ref_solution->x1, &ref_solution->x2);
@@ -284,7 +296,7 @@ void gen_test_infity_roots(sParams* params, sSolution *ref_solution)
     assert(ref_solution);
 
     *params = {.0, .0, .0};
-    *ref_solution = {INFINITY_ROOTS, .0, .0};
+    *ref_solution = {.0, .0, INFINITY_ROOTS};
 }
 
 bool run_test(const sParams* params, const sSolution *ref_solution)
@@ -292,7 +304,7 @@ bool run_test(const sParams* params, const sSolution *ref_solution)
     assert(params);
     assert(ref_solution);
 
-    sSolution test_solution = {0, .0, .0};
+    sSolution test_solution = {.0, .0, ZERO_ROOTS};
     solve_general(params, &test_solution);
 
     if (is_equal_sSolution(ref_solution, &test_solution))

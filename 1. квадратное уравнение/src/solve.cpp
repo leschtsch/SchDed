@@ -41,7 +41,7 @@ void solve_deg2(const sParams* params, sSolution *solution)
     {
         case 0b00:
         {
-            *solution = {1, .0, .0};
+            *solution = {.0, .0, ONE_ROOT};
             return;
         }
 
@@ -49,19 +49,27 @@ void solve_deg2(const sParams* params, sSolution *solution)
         {
             if ((c < 0) == (a < 0))
             {
-                *solution = {0, .0, .0};
+                *solution = {.0, .0, ZERO_ROOTS};
                 return;
             }
 
             double sqrt_ca = sqrt(-c / a);
-            *solution = {2, -sqrt_ca, sqrt_ca};
+            *solution = {
+                -sqrt_ca,
+                sqrt_ca,
+                TWO_ROOTS
+            };
 
             return;
         }
 
         case 0b10:
         {
-            *solution = {2, 0, -b / a};
+            *solution = {
+                .0,
+                -b / a,
+                TWO_ROOTS
+            };
 
             if ((b < 0) == (a < 0))
                 my_swap(&solution->x1, &solution->x2);
@@ -78,19 +86,18 @@ void solve_deg2(const sParams* params, sSolution *solution)
     double D = b * b - 4 * a * c;
 
     if (is_zero(D))
-        *solution = {1, -b / (2 * a), .0};
+        *solution = {-b / (2 * a), .0, ONE_ROOT};
     else if (D < 0)
-        *solution = {0, .0, .0};
+        *solution = {.0, .0, ZERO_ROOTS};
     else
     {
         double sqrt_D = sqrt(D);
 
         *solution = {
-            2,
             (-b - sqrt_D) / (2 * a),
-            (-b + sqrt_D) / (2 * a)
+            (-b + sqrt_D) / (2 * a),
+            TWO_ROOTS
         };
-        //TODO: самые большие типы сверху
         if (a < 0)
             my_swap(&solution->x1, &solution->x2);
     }
@@ -106,7 +113,11 @@ void solve_deg1(const sParams* params, sSolution *solution)
 
     double b = params->b;
     double c = params->c;
-    *solution = {1, -c / b, .0};
+    *solution = {
+        -c / b,
+        .0,
+        ONE_ROOT
+    };
 }
 
 void solve_deg0(const sParams* params, sSolution *solution)
@@ -117,5 +128,7 @@ void solve_deg0(const sParams* params, sSolution *solution)
     assert(is_zero(params->a));
     assert(is_zero(params->b));
 
-    *solution =  (!is_zero(params->c)) ? (sSolution){0, .0, .0} : (sSolution){INFINITY_ROOTS, .0, .0};
+    *solution =  (!is_zero(params->c)) ?
+        (sSolution){.0, .0, ZERO_ROOTS} :
+        (sSolution){.0, .0, INFINITY_ROOTS};
 }

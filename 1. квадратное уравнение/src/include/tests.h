@@ -107,7 +107,7 @@ void gen_test_1_root_deg2(sParams* params, sSolution *solution);
 void gen_test_2_roots(sParams* params, sSolution *solution);
 
 /**
- * @brief Тест: случаи с 2 корнями и a != 0, которые решается без дискриминанта.
+ * @brief Тест: Уравнения второй степени, которые решается без дискриминанта.
  *
  * @param [out] params      Указатель на структуру для записи параметров.
  * @param [out] solution    Указатель на структуру для записи ответов.

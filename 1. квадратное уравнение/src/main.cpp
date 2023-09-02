@@ -123,7 +123,7 @@ int main(int argc, char * const argv[])
     if (options.tests_n > 0)
         run_tests(options.tests_n, options.tests_tracking_freq);
 
-    if (options.solve_equation)
+    if (options.solve_equation != DONT_SOLVE)
     {
         int input_res = 0;
 
@@ -136,7 +136,7 @@ int main(int argc, char * const argv[])
             return input_res;
         }
 
-        sSolution solution = {0, .0, .0};
+        sSolution solution = {.0, .0, ZERO_ROOTS};
         solve_general(&options.equation_params, &solution);
 
         assert(solution.x1 < solution.x2 || solution.rnum < 2);
