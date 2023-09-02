@@ -1,17 +1,17 @@
 /**
  * @file common.cpp
- * @brief общие функции и прочее
+ * @brief Общие функции и прочее.
  */
-
-#include "include/common.h" //TODO: даже здесь инклюд после стандартных
 
 #include <assert.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "include/common.h"
 
-int is_equal_double(double a, double b)//TODO: bool, is_equal
+bool is_equal_double(double a, double b)
 {
     assert(isfinite(a));
     assert(isfinite(b));
@@ -19,7 +19,7 @@ int is_equal_double(double a, double b)//TODO: bool, is_equal
     return (fabs(a - b) < EPS);
 }
 
-int is_equal_sSolution(const sSolution *a, const sSolution *b)
+bool is_equal_sSolution(const sSolution *a, const sSolution *b)
 {
     assert(a);
     assert(b);
@@ -82,16 +82,6 @@ void my_swap (double * a, double * b)
     double tmp = *a;
     *a = *b;
     *b = tmp;
-}
-
-int is_number(char * s)//TODO отразить строку в названии
-{
-    assert(s);
-
-    char * p = s;
-    strtod(s, &p);
-
-    return (p != s && *p == '\0');
 }
 
 void process_error(int err_code)

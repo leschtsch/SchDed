@@ -1,7 +1,8 @@
 /**
  * @file argparse.cpp
- * @brief разбор аргументов командной строки
+ * @brief Разбор аргументов командной строки.
  */
+
 #include <unistd.h>
 #include <getopt.h>
 #include <stdlib.h>
@@ -26,7 +27,7 @@ const char HELP_MSG[] = "Некоторые опции отключают дру
                         "Если параметры не указаны, они читаются из stdin.\n"
                         "\t-h --help Выводит помощь. Завершает программу.\n\n"; ///< Выводится при -h
 
-int parse_args(int argc, char *argv[], sOptions *options) //TODO: enum  а не int
+eErrors parse_args(int argc, char * const argv[], sOptions *options)
 {
     assert(argv);
     assert(options);
@@ -60,9 +61,9 @@ int parse_args(int argc, char *argv[], sOptions *options) //TODO: enum  а не 
                 int tmp_num = 0;
 
                 if (optarg && sscanf(optarg, "%d", &tmp_num) && tmp_num > 0)
-                    options->run_tests = tmp_num;
+                    options->tests_n = tmp_num;
                 else
-                    options->run_tests = TESTS_N;//TODO: TESTS_N_DEFAULT
+                    options->tests_n = TESTS_N_DEFAULT;
 
                 options->solve_equation = DONT_SOLVE;
                 break;
@@ -76,7 +77,7 @@ int parse_args(int argc, char *argv[], sOptions *options) //TODO: enum  а не 
                 if (optarg && sscanf(optarg, "%d", &tmp_num) && tmp_num > 0)
                     options->tests_tracking_freq = tmp_num;
                 else
-                    options->tests_tracking_freq = PRINT_TESTS_REM_FREQ;
+                    options->tests_tracking_freq = TESTS_TRACKING_FREQ_DEFAULT;
 
                 break;
             }
@@ -88,7 +89,7 @@ int parse_args(int argc, char *argv[], sOptions *options) //TODO: enum  а не 
                 if (!optarg)
                     break;
 
-                int parse_res = 0;
+                eErrors parse_res = OK;
                 if ((parse_res = parse_params(optarg, &options->equation_params)))
                     return parse_res;
 
@@ -106,7 +107,7 @@ int parse_args(int argc, char *argv[], sOptions *options) //TODO: enum  а не 
     return OK;
 }
 
-int parse_params(const char *arg, sParams *params)
+eErrors parse_params(const char *arg, sParams *params)
 {
     assert(params);
     assert(arg);

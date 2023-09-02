@@ -1,9 +1,7 @@
 /**
  * @file io.cpp
- * @brief функци ввода-вывода
+ * @brief Функци ввода-вывода.
  */
-
-#include "include/io.h"
 
 #include <assert.h>
 #include <math.h>
@@ -11,9 +9,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "include/io.h"
 #include "include/common.h"
 
-int input_params(int argc, char *argv[], sParams* params)//TODO: что за инпут
+eErrors input_params(int argc, const char * const argv[], sParams* params)
 {
     assert(argc > 0);
     assert(argv);
@@ -56,7 +55,7 @@ void output(sSolution *solution)
             break;
         }
 
-        case INFTY: //TODO: INFTY не оч название
+        case INFINITY_ROOTS:
         {
             printf("бесконечно много корней.\n");
             break;

@@ -1,19 +1,20 @@
 /**
  * @file common.h
- * @brief общие функции и прочее
+ * @brief Общие функции и прочее.
  */
 
 #ifndef COMMON_H
 #define COMMON_H
 
 #include <math.h>
+#include <stdbool.h>
 
-#define EPS 1e-6  ///<  точность double и просто маленькое значение
-#define is_zero(a) (fabs((a)) < EPS) ///< @brief частный и частый случай is_zero(a);
+#define EPS 1e-6                     ///<  точность double и просто маленькое значение.
+#define is_zero(a) (fabs((a)) < EPS) ///< @brief Частный и частый случай is_equal_double(a, .0).
                                      ///< @see is_equal_double
 
 /**
- * @brief структура для записи решения
+ * @brief Cтруктура для записи решения.
  *
  * Если корня два, в x1 меньший,
  * если крень один, он в x1,
@@ -23,13 +24,13 @@
 typedef struct
 {
     //TODO: enum  для корней
-    int rnum;  ///< количество корней
-    double x1; ///< первый корень
-    double x2; ///< второй корень
+    int rnum;  ///< Количество корней.
+    double x1; ///< Первый корень.
+    double x2; ///< Второй корень.
 } sSolution;
 
 /**
- * @brief структура для записи параметров уравнения
+ * @brief Структура для записи параметров уравнения.
  */
 typedef struct
 {
@@ -39,7 +40,7 @@ typedef struct
 } sParams;
 
 /**
- * @brief enum возможных внутренних кодов возврата
+ * @brief Enum возможных внутренних кодов возврата.
  */
 typedef enum
 {
@@ -47,70 +48,63 @@ typedef enum
     ERR_BAD_INPUT,      ///< Ошибка ввода
     ERR_CLI_BAD_ARG,    ///< Неизвестный агрумент командной строки.
     HELP_ASKED          ///< Пользователь запросил помощь. Не ошибка, но делать больше ничего не надо.
-} errors;
+} eErrors;
 
-const int INFTY = -1;           ///< значение для бесконечности корней
+const int INFINITY_ROOTS = -1;           ///< Значение для бесконечности корней.
 
 /**
- * @brief сравнивает два double
+ * @brief Сравнивает два double.
  *
- * @param [in] a первое число
- * @param [in] b второе число
- * @return 1, если a = b, иначе 0
+ * @param [in] a Первое число.
+ * @param [in] b Второе число.
+ * @return true, если a = b, иначе false.
  *
  * @see EPS
  */
-int is_equal_double(double a, double b);
+bool is_equal_double(double a, double b);
 
 /**
- * @brief сравнивает две структуры sSolution
+ * @brief Сравнивает две структуры sSolution.
  *
- * @param [in] a указатель на первую структуру
- * @param [in] b указатель на вторую структуру
- * @return 1, если a = b, иначе 0
+ * @param [in] a указатель на первую структуру.
+ * @param [in] b указатель на вторую структуру.
+ * @return true, если a = b, иначе false.
  */
-int is_equal_sSolution(const sSolution *a, const sSolution *b);
+bool is_equal_sSolution(const sSolution *a, const sSolution *b);
 
 /**
- * @brief случайное число от a до b
+ * @brief Случайное число от a до b.
  *
  * a должо быть <= b, хотя формула и работает если b > a.
  *
- * @param [in] a нижняя граница
- * @param [in] b верхняя граница
- * @return случайное число от a до b
+ * @param [in] a Нижняя граница.
+ * @param [in] b Верхняя граница.
+ * @return Случайное число от a до b.
  */
 double random_ab(double a, double b);
 
 /**
- * @brief случайное число от a до b, кроме 0
+ * @brief Случайное число от a до b, кроме 0.
  *
  * a должо быть <= b, хотя формула и работает если b > a.
  *
- * @param [in] a нижняя граница
- * @param [in] b верхняя граница
- * @return случайное число от a до b
+ * @param [in] a Нижняя граница.
+ * @param [in] b Верхняя граница.
+ * @return Случайное число от a до b, кроме 0.
  */
 double random_ab_nz(double a, double b);
 
 void my_swap (double * a, double * b); ///<swap, т. к. встроенный, поже,  в std::
 
 /**
- * @brief проверяет, является ли строка числом
- * @param s - строка
- * @return 1 если строка - число, 0 иначе
- */
-int is_number(char * s);
-
-/**
- * @brief обработка ошибок
+ * @brief Обработка ошибок.
  *
  * Ошибки пока только ошибки пользователя.
  * А обработка - только printf.
  *
- * @param [in] err_code код ошибки
+ * @param [in] err_code Код ошибки.
  *
- * @see errors
+ * @see eErrors
  */
 void process_error(int err_code);
 

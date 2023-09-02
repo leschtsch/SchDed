@@ -1,15 +1,14 @@
 /**
  * @file solve.cpp
- * @brief функци, решающие уравнения
+ * @brief Функци, решающие уравнения.
  */
-
-#include "include/solve.h"
 
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "include/solve.h"
 #include "include/common.h"
 
 void solve_general(const sParams* params, sSolution *solution)
@@ -85,7 +84,12 @@ void solve_deg2(const sParams* params, sSolution *solution)
     else
     {
         double sqrt_D = sqrt(D);
-        *solution = {2, (-b - sqrt_D) / (2 * a), (-b + sqrt_D) / (2 * a)}; //TODO: разделить на строки
+
+        *solution = {
+            2,
+            (-b - sqrt_D) / (2 * a),
+            (-b + sqrt_D) / (2 * a)
+        };
         //TODO: самые большие типы сверху
         if (a < 0)
             my_swap(&solution->x1, &solution->x2);
@@ -113,5 +117,5 @@ void solve_deg0(const sParams* params, sSolution *solution)
     assert(is_zero(params->a));
     assert(is_zero(params->b));
 
-    *solution =  (!is_zero(params->c)) ? (sSolution){0, .0, .0} : (sSolution){INFTY, .0, .0};
+    *solution =  (!is_zero(params->c)) ? (sSolution){0, .0, .0} : (sSolution){INFINITY_ROOTS, .0, .0};
 }

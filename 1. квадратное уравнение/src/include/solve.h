@@ -1,6 +1,6 @@
 /**
  * @file solve.h
- * @brief функци, решающие уравнения
+ * @brief Функци, решающие уравнения.
  */
 
 #ifndef SOLVE_H
@@ -9,24 +9,24 @@
 #include  "common.h"
 
 /**
- * @brief решает уравнение
+ * @brief Решает уравнение.
  *
  * Внутри в зависимости от параметров вызывает solve_deg.
  *
- * @param [in]  params      параметры уравнения
- * @param [out] solution    указатель на структуру для записи решения
- * @return Ничего, так как я не придумал чего-либо осмысленного
+ * @param [in]  params      Параметры уравнения.
+ * @param [out] solution    Указатель на структуру для записи решения.
+ * @return Ничего, так как я не придумал чего-либо осмысленного.
  */
 void solve_general(const sParams* params, sSolution *solution);
 
 /**
  * @brief Решает уравнение ax^2 + bx + c = 0.
  *
- * @note Если params.a == 0, то падает на assert'е
+ * @note Если params.a == 0, то падает на assert'е.
  *
- * @param [in]  params      параметры уравнения
- * @param [out] solution    указатель на структуру для записи решения
- * @return Ничего, так как я не придумал чего-либо осмысленного
+ * @param [in]  params      Параметры уравнения.
+ * @param [out] solution    указатель на структуру для записи решения.
+ * @return Ничего, так как я не придумал чего-либо осмысленного.
  */
 void solve_deg2(const sParams* params, sSolution *solution);
 
@@ -35,9 +35,9 @@ void solve_deg2(const sParams* params, sSolution *solution);
  *
  * @note Если params.b == 0 или params.a != 0, то падает на assert'е
  *
- * @param [in]  params      параметры уравнения
- * @param [out] solution    указатель на структуру для записи решения
- * @return Ничего, так как я не придумал чего-либо осмысленного
+ * @param [in]  params      Параметры уравнения.
+ * @param [out] solution    указатель на структуру для записи решения.
+ * @return Ничего, так как я не придумал чего-либо осмысленного.
  */
 void solve_deg1(const sParams* params, sSolution *solution);
 
@@ -48,9 +48,9 @@ void solve_deg1(const sParams* params, sSolution *solution);
  *
  * Она состоит из одного тернарника, но для общности сделал так
  *
- * @param [in]  params      параметры уравнения
- * @param [out] solution    указатель на структуру для записи решения
- * @return Ничего, так как я не придумал чего-либо осмысленного
+ * @param [in]  params      Параметры уравнения.
+ * @param [out] solution    указатель на структуру для записи решения.
+ * @return Ничего, так как я не придумал чего-либо осмысленного.
  */
 void solve_deg0(const sParams* params, sSolution *solution);
 

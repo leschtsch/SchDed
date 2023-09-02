@@ -1,6 +1,6 @@
 /**
  * @file argparse.h
- * @brief разбор аргументов командной строки
+ * @brief Разбор аргументов командной строки.
  */
 
 #ifndef ARGPARSE_H
@@ -12,36 +12,43 @@
  * @brief enum того, надо ли решать уравнение и/или считывать его параметры.
  * @see sOptions
  */
-typedef enum //TODO: rename eSfsdfds
+typedef enum
 {
-    DONT_SOLVE,       ///< Не решать уравнение
-    INPUT_PARAMS,   ///< Нужно считать параметры уравнения из stdin
-    CLI_PARAMS      ///< Параметры уже считаны из аргументов командной строки
-} solve_equation_state;
+    DONT_SOLVE,     ///< Не решать уравнение.
+    INPUT_PARAMS,   ///< Нужно считать параметры уравнения из stdin.
+    CLI_PARAMS      ///< Параметры уже считаны из аргументов командной строки.
+} eSolveEquationState;
 
 /**
  * @brief структура, куда  parse_args запишет считанные опции
- * @see parse_args, solve_equation_state
+ * @see parse_args, eSolveEquationState
  */
 typedef struct
 {
-    int run_tests;  //TODO: n_tests/.../...                        ///< Запускать ли тесты. Если > 0, запустит столько тестов.
+    int tests_n;                            ///< Запускать ли тесты. Если > 0, запустит столько тестов.
     int tests_tracking_freq;                ///< Как часто выводить прогресс по тестам. Если = 0, то прогресс не выводится.
-    solve_equation_state solve_equation;    ///< Надо ли решать уравнение и/или считывать его параметры.
+    eSolveEquationState solve_equation;    ///< Надо ли решать уравнение и/или считывать его параметры.
     sParams equation_params;                ///< Структура для записи параметров уравнения.
 } sOptions;
 
-//TODO: точки и заглавные
 /**
- * @brief парсит аргументы командной строки.
+ * @brief Парсит аргументы командной строки.
  *
- * @note об опциях см на главной.
+ * @note Об опциях см на главной.
+ *
+ * @param [out] options Структура для записи опций.
+ * @return Код возврата.
  */
-int parse_args(int argc, char *argv[], sOptions *options);
+eErrors parse_args(int argc, char * const argv[], sOptions *options);
 
 /**
  * @brief парсит параметры опции -s, т.е параметры уравнения.
+ *
+ * @param [in]  arg     Аргумент опции -s. Ожидается 3 числа через запятую.
+ * @param [out] params  Структура для записи параметров
+ *
+ * @return Код возврата.
  */
-int parse_params(const char * arg, sParams *params);
+eErrors parse_params(const char * arg, sParams *params);
 
 #endif //ARGPARSE_H
