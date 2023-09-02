@@ -13,6 +13,26 @@
 #include "include/common.h"
 #include "include/config.h"
 
+extern const char OPT_TESTS_LONG[] = "run-tests";           ///< Длинная опция запуска тестов.
+extern const char OPT_PROGRESS_LONG[] = "track_progress";   ///< Длиная опция отслеживания прогресса.
+extern const char OPT_SOLVE_LONG[] = "solve-equation";      ///< Длинная опция решения уравнения.
+extern const char OPT_HELP_LONG[] = "help";                 ///< Длинная опция помощи.
+
+
+extern const char HELP_MSG[] = "Некоторые опции отключают другие. Чтобы включить "
+                        "опцию обратно, нужно написать эту опцию после "
+                        "отключения. По умолчанию включена -s.\n\n"
+                        "Разрешенные опции:\n"
+                        "\t-%c[num] --%s[=num] запускает num тестов. Если num отсутствует, "
+                        "или <= 0, запускается кол-во тестов"
+                        "по умолчанию. Отключает решение уравнения.\n"
+                        "\t-%c[num] --%s[=num] Если производятся тесты, каждые num тестов "
+                        "будет выводится, сколько тестов осталось "
+                        "Если num отсутствует или <= 0, выводистя каждый тест.\n"
+                        "\t-%c[a,b,c] --%s[=a,b,c] Решает уравнение ax^2 + bx + c = 0. "
+                        "Если параметры не указаны, они читаются из stdin.\n"
+                        "\t-%c --%s Выводит помощь. Завершает программу.\n\n"; ///< Выводится при -h
+
 eErrors parse_args(int argc, char * const argv[], sOptions *options)
 {
     assert(argv);

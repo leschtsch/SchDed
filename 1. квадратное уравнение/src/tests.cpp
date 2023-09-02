@@ -39,10 +39,10 @@ int run_tests(int tests_n, int tracking_freq)
         if (tracking_freq && !(i % tracking_freq))
         {
             printf(
-                    "Осталось  %9d тест(а, ов).\tЭто ~ %-7.3f секунд\n",
-                    tests_n - i,
-                    comp_time_rem(i, tests_n, clock() - start)
-                  );
+                "Осталось  %9d тест(а, ов).\tЭто ~ %-7.3f секунд\n",
+                tests_n - i,
+                comp_time_rem(i, tests_n, clock() - start)
+            );
             fflush(stdout);
         }
 
@@ -59,11 +59,12 @@ int run_tests(int tests_n, int tracking_freq)
 
     fflush(stderr);
 
-    printf("Тестов провалено: %d / %d, доля ошибок: %f.\n"
-           "Время выполнения: %f.\n",
-           tests_failed, tests_n, (double) tests_failed / tests_n,
-           (double) (clock() - start) / CLOCKS_PER_SEC
-           );
+    printf(
+        "Тестов провалено: %d / %d, доля ошибок: %f.\n"
+        "Время выполнения: %f.\n",
+        tests_failed, tests_n, (double) tests_failed / tests_n,
+        (double) (clock() - start) / CLOCKS_PER_SEC
+    );
 
     return tests_failed;
 }
@@ -311,16 +312,17 @@ bool run_test(const sParams* params, const sSolution *ref_solution)
         return 0;
 
     double D = params->b * params->b - 4 * params->a * params->c;
-    fprintf(stderr,
-                "ТЕСТ ПРОВАЛЕН:\n"
-                "\tПараметры: %.9f\t %.9f\t %.9f\n"
-                "\tДискриминант: %g\n"
-                "\tОжидаемое решение: %d\t %.9f\t %.9f\n"
-                "\tОтвет функции:     %d\t %.9f\t %.9f\n",
-                params->a, params->b, params->c,
-                D,
-                ref_solution->rnum, ref_solution->x1, ref_solution->x2,
-                test_solution.rnum, test_solution.x1, test_solution.x2
-                );
+    fprintf(
+        stderr,
+        "ТЕСТ ПРОВАЛЕН:\n"
+        "\tПараметры: %.9f\t %.9f\t %.9f\n"
+        "\tДискриминант: %g\n"
+        "\tОжидаемое решение: %d\t %.9f\t %.9f\n"
+        "\tОтвет функции:     %d\t %.9f\t %.9f\n",
+        params->a, params->b, params->c,
+        D,
+        ref_solution->rnum, ref_solution->x1, ref_solution->x2,
+        test_solution.rnum, test_solution.x1, test_solution.x2
+    );
     return 1;
 }
