@@ -13,31 +13,17 @@
 #include "include/common.h"
 #include "include/config.h"
 
-const char HELP_MSG[] = "Некоторые опции отключают другие. Чтобы включить "
-                        "опцию обратно, нужно написать эту опцию после "
-                        "отключения. По умолчанию включена -s.\n\n"
-                        "Разрешенные опции:\n"
-                        "\t-t[num] --run-tests[=num] запускает num тестов. Если num отсутствует, "
-                        "или <= 0, запускается кол-во тестов"
-                        "по умолчанию. Отключает решение уравнения.\n"
-                        "\t-p[num] --track_progress[=num] Если производятся тесты, каждые num тестов "
-                        "будет выводится, сколько тестов осталось "
-                        "Если num отсутствует или <= 0, выводистя каждый тест.\n"
-                        "\t-s[a,b,c] --solve-equation[=a,b,c] Решает уравнение ax^2 + bx + c = 0. "
-                        "Если параметры не указаны, они читаются из stdin.\n"
-                        "\t-h --help Выводит помощь. Завершает программу.\n\n"; ///< Выводится при -h
-
 eErrors parse_args(int argc, char * const argv[], sOptions *options)
 {
     assert(argv);
     assert(options);
 
-    char shortopts[] = "ht::p::s::";//TODO: const'ы для опций, вывод --help - отдельная функция.
+    char shortopts[] = "ht::p::s::";
     struct option longopts[] = {
-                                    {"help", 0, NULL, 'h'},
-                                    {"run-tests", 2, NULL, 't'},
-                                    {"track-progress", 2, NULL, 'p'},
-                                    {"solve-equation", 2, NULL, 's'},
+                                    {OPT_HELP_LONG, 0, NULL, OPT_HELP_SHORT},
+                                    {OPT_TESTS_LONG, 2, NULL, OPT_TESTS_SHORT},
+                                    {OPT_PROGRESS_LONG, 2, NULL, OPT_PROGRESS_SHORT},
+                                    {OPT_SOLVE_LONG, 2, NULL, OPT_SOLVE_SHORT},
                                     {NULL, 0, NULL, 0}
                                };
 
@@ -50,13 +36,13 @@ eErrors parse_args(int argc, char * const argv[], sOptions *options)
 
         switch (opt)
         {
-            case 'h':
+            case OPT_HELP_SHORT:
             {
-                printf("%s\n", HELP_MSG);
+                print_help();
                 return HELP_ASKED;
             }
 
-            case 't':
+            case OPT_TESTS_SHORT:
             {
                 int tmp_num = 0;
 
@@ -69,7 +55,7 @@ eErrors parse_args(int argc, char * const argv[], sOptions *options)
                 break;
             }
 
-            case 'p':
+            case OPT_PROGRESS_SHORT:
             {
 
                 int tmp_num = 0;
@@ -82,7 +68,7 @@ eErrors parse_args(int argc, char * const argv[], sOptions *options)
                 break;
             }
 
-            case 's':
+            case OPT_SOLVE_SHORT:
             {
                 options->solve_equation = INPUT_PARAMS;
 
@@ -116,4 +102,15 @@ eErrors parse_params(const char *arg, sParams *params)
         return ERR_CLI_BAD_ARG;
 
     return OK;
+}
+
+void print_help(void)
+{
+    printf(
+    HELP_MSG,
+    OPT_TESTS_SHORT, OPT_TESTS_LONG,
+    OPT_PROGRESS_SHORT, OPT_PROGRESS_LONG,
+    OPT_SOLVE_SHORT, OPT_SOLVE_LONG,
+    OPT_HELP_SHORT, OPT_HELP_LONG
+    );
 }
