@@ -33,7 +33,7 @@ extern const char HELP_MSG[] = "Некоторые опции отключают
                         "Если параметры не указаны, они читаются из stdin.\n"
                         "\t-%c --%s Выводит помощь. Завершает программу.\n\n"; ///< Выводится при -h
 
-eErrors parse_args(int argc, char * const argv[], sOptions *options)
+eErrors parse_args(int argc,  char *const argv[], sOptions *options)
 {
     assert(argv);
     assert(options);

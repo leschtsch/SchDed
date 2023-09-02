@@ -101,9 +101,16 @@
 #include "include/config.h"
 
 /**
+ * @note В объявлении нет const, так как в getopt'е его нет
+ *       поскольку он может менять местами argv,
+ *       причем через переписывание строк а не через замену
+ *       указателей? При этом в g++ все ок?!!?!?!
+ *       Крч мне гетопт не понравился, больше его юзать не буду
+ *
  * @see input_params, process_error, solve_general, output
  */
-int main(int argc, char * const argv[])
+int main(int argc, char *const argv[])
+//TODO: без гетопта
 {
     sOptions options = {
         .tests_n = 0,

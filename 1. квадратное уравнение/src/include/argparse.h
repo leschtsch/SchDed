@@ -53,7 +53,7 @@ void print_help(void);
  * @param [out] options Структура для записи опций.
  * @return Код возврата.
  */
-eErrors parse_args(int argc, char * const argv[], sOptions *options);
+eErrors parse_args(int argc,  char *const argv[], sOptions *options);
 
 /**
  * @brief парсит параметры опции -s, т.е параметры уравнения.
