@@ -7,7 +7,7 @@
 #define ARGPARSE_H
 
 #include "common.h"
-
+//TODO: доки
 const char OPT_TESTS_SHORT =    't'; ///< Короткая опция запуска тестов.
 const char OPT_PROGRESS_SHORT = 'p'; ///< Короткая опция отслеживания прогресса.
 const char OPT_SOLVE_SHORT =    's'; ///< Короткая опция решения уравнения.
