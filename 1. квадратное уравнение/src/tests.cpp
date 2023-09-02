@@ -134,7 +134,7 @@ void gen_test_1_root_deg1(sParams* params, sSolution *ref_solution)
 
     if (random_ab(0,1) < ROOTS_0_PROB)
     {
-        *params  = {
+        *params = {
             .0,
             random_ab_nz(-TEST_RANGE, TEST_RANGE),
             .0
